@@ -13,7 +13,7 @@ def ask():
 
   return jsonify({
   "gemini":"Gemini received:" + question,
-  "grq":"Groq recevied:"+ question,
+  "groq":"Groq recevied:"+ question,
   "deepseek":"DeepSeek recevied:" + question
 })
 
