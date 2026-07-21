@@ -8,9 +8,8 @@ def home():
 
 @app.route("/ask",methods=["POST"])
 def ask():
-  data = request.get_json()
-  question = data.get("quesion","")
-
+  question = request.get_data(as_text=True)
+  
   return jsonify({
   "gemini":"Gemini received:" + question,
   "groq":"Groq recevied:"+ question,
