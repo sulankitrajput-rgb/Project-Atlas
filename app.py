@@ -26,7 +26,9 @@ f"https:/generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:genera
        }
     ).json()
   return jsonify({
-  "gemini": gemini
+  "gemini": gemini["canditates"][0]
+    ["content"]["parts"][0]["text"]
+  })
 })
 
 if __name__ == "__main__":
