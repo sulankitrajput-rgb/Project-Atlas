@@ -11,7 +11,7 @@ def ask():
   data = request.get_json()
   question = data.get("quesion","")
 
-return jsonify({
+  return jsonify({
   "gemini":"Gemini received:" + question,
   "grq":"Groq recevied:"+ question,
   "deepseek":"DeepSeek recevied:" + question
