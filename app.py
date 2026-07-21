@@ -5,9 +5,8 @@ import os
 app = Flask(__name__)
 
 GEMINI_KEY =os.getenev("GEMINI_KEY")
-GROQ_KEY = os.getenv('GROQ_KEY")
-DEEPSEEK_KEY = 
-os.getenv("DEEPSEEK_KEY")
+GROQ_KEY = os.getenv("GROQ_KEY")
+DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 
 @app.route("/")   
 def home():
