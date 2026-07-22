@@ -13,11 +13,11 @@ def home():
   return "Project Atlas is runing!" 
 
 @app.route("/ask",methods=["POST"]
-           def ask():
-             data = request.get_json(force=True)
-             question = data["question"]
+def ask():
+   data = request.get_json(force=True)
+   question = data["question"]
 
-gemini = requestS.post(
+gemini = requests.post(
 
   f"https://generativelanguage.googlrapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}",
   json={
