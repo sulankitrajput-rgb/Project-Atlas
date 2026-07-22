@@ -33,9 +33,10 @@ def ask():
 
 answer = gemini["candidates"][0]["content"]["parts"][0]["text"]
 
-    return jsonify({
-      "answer": answer
-    })
+return jsonify({
+  "answer":answer
+})
+      
 
 if __name__=="__main__":
   app.run(host="0.0.0.0",port=5000,debug=True)
