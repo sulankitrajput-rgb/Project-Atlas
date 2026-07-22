@@ -31,11 +31,11 @@ def ask():
      }
    ).json()
 
-answer = gemini["candidates"][0]["content"]["parts"][0]["text"]
+    answer = gemini["candidates"][0]["content"]["parts"[0]["text"]
 
-return jsonify({
-  "answer":answer
-})
+    return jsonify({
+      "answer": answer
+    })
 
 
 if __name__=="__main__":
