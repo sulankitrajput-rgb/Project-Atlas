@@ -12,7 +12,7 @@ DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 def home():
   return "Project Atlas is runing!" 
 
-@app.route("/ask",methods=["POST"]
+@app.route("/ask",methods=["POST"])
 def ask():
    data = request.get_json(force=True)
    question = data["question"]
