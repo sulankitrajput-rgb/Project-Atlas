@@ -12,31 +12,31 @@ DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 def home():
   return "Project Atlas is runing!" 
 
-@app.route("/ask",methods=["POST"])
-def ask():
-  data = request.get_json(force=True)
-  question = data["question"]
+@app.route("/ask",methods=["POST"]
+           def ask():
+             data = request.get_json(force=True)
+             question = data["question"]
 
-  gemini = requests.post(
+gemini = requestS.post(
 
-    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}",
-         json={
-           "contents":[
-             {
-               "parts":[
-                 {"text":question}
-               ]
-             }
-           ]
-         }
-  ).json()
+  f"https://generativelanguage.googlrapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}",
+  json={
+    "contents":[
+      {
+        "parts":[
+          {"text": question}
+        ]
+      }
+    ]
+  }
+).json()
 
-answer = gemini["candidates"][0]["content"]["parts"][0]["text"]
+answer = gemini["candidates"][0]["content"]["parts"}[0]["text"]
 
-    return jsonify({
-      "answer":answer
-    })
-      
+return jsonify({
+  "answer":answer
+})
+
 
 if __name__=="__main__":
   app.run(host="0.0.0.0",port=5000,debug=True)
