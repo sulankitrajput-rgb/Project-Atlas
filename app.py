@@ -15,7 +15,8 @@ def home():
 @app.route("/ask",methods=["POST"])
 def ask():
 
-  question = request.get_json()["question"]
+ data = request.get_json(force=True)
+  question = data["question"]
 
   gemini = requests.post(
 
