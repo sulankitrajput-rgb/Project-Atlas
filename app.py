@@ -21,17 +21,23 @@ def ask():
 
 f"https:/generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}",
     json={
-      "contents":[{"parts":
-      [{"text":question}]}]
-       }
+      "contents":[
+        {
+          "parts":[
+            {"text":question}
+          ]
+        }
+      ]
+    }
     ).json()
-  return jsonify({
-  "gemini": gemini["candidates"][0]
+  
+  
+  answer = gemini["candidates"][0]
     ["content"]["parts"][0]["text"]
-  })
 
-if __name__ == "__main__":
-  app.run(host="0.0.0.0",port=5000)
+return jsonify({
+  "answer":answer
+})
   
   
 
