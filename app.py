@@ -16,7 +16,7 @@ def home():
 def ask():
 
  data = request.get_json(force=True)
-  question = data["question"]
+ question = data["question"]
 
   gemini = requests.post(
 
