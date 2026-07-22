@@ -21,7 +21,7 @@ def ask():
 
   f"https://generativelanguage.googlrapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}",
      json={
-       "contents":[
+       "contents": [
          {
            "parts":[
              {"text":question}
@@ -31,11 +31,11 @@ def ask():
      }
    ).json()
 
-     answer= gemini["candidates"][0]["content"]["parts"[0]["text"]
+  answer = gemini["candidates"][0]["contens"]["parts"][0]["text"]
 
-     return jsonify({
-       "answer": answer
-     })
+  return jsonify({
+    "answer":answer
+  })
 
 if __name__=="__main__":
   app.run(host="0.0.0.0",port=5000,debug=True)
