@@ -8,13 +8,19 @@ GEMINI_KEY =os.getenv("GEMINI_KEY")
 GROQ_KEY = os.getenv("GROQ_KEY")
 DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 
+import json 
+
 @app.route("/")   
 def home():
   return "Project Atlas is runing!" 
 
 @app.route("/ask",methods=["POST"])
 def ask():
-  data = request.get_json(force=True)
+  data = request.get_json(silent=True)
+
+  if data is None:
+    data = json.loads(request.get_data(as_text=True))
+
   question = data["question"]
 
   gemini = requests.post(
