@@ -34,7 +34,9 @@ f"https:/generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:genera
   
   answer = gemini.json()["candidates"][0]["content"]["parts"][0]["text"]
 
-  return jsonify({"answer":answer})
+  return jsonify({ 
+    "answer":answer
+  })
 
 if __name__== "__main__":
   app.run(host="0.0.0.0", port=5000,
