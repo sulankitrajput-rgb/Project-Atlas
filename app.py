@@ -31,7 +31,7 @@ gemini = requests.post(
   }
 ).json()
 
-answer = gemini["candidates"][0]["content"]["parts"}[0]["text"]
+answer = gemini["candidates"][0]["content"]["parts"][0]["text"]
 
 return jsonify({
   "answer":answer
