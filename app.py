@@ -18,7 +18,7 @@ def ask():
  data = request.get_json(force=True)
  question = data["question"]
 
-  gemini=requests.post(
+ gemini=requests.post(
 
 f"https:/generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}",
     json={
