@@ -18,7 +18,7 @@ def ask():
 
   import json
 
-  data = request.get_json()
+  data = request.get_json(force=True)
 
   if not data:
     return jsonify({"error":"No JSON received"}), 400
