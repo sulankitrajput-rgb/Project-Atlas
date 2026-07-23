@@ -48,7 +48,7 @@ response = requests.post(
 
 result = response.json()
 
-if"choices"not in result:
+if "choices" not in result:
   return jsonify(result), 500
 
 answer = result["choices"][0]["message"]["content"]
