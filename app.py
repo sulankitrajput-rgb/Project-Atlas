@@ -39,6 +39,9 @@ def ask():
       ]
     }
   ).json()
+
+  print(gemini)
+  
   answer = gemini["candidates"][0]["content"]["parts"][0]["text"]
   return jsonify({
   "answer": answer
