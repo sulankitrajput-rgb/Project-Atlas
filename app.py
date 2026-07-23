@@ -31,7 +31,7 @@ def ask():
     "Content-Type": "application/json"
   }
   if model == "deepseek":
-    model_name ="deepseek-r1-distill-llama-70b
+    model_name ="deepseek-r1-distill-llama-70b"
   else:
     model_name = "llama-3.3-70b-versatile"
 
