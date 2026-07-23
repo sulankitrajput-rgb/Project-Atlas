@@ -24,13 +24,20 @@ def ask():
     return jsonify({"error":"No JSON received"}), 400
 
   question = data.get("question")
+  model = data.get("model","llama")
   
   headers = {
     "Authorization":f"Bearer {GROQ_KEY}",
     "Content-Type": "application/json"
   }
+  if model == "deepseek":
+    model_name =
+    "deepseek-r1-distill-llama-70b
+  else:
+    model_name = "llama-3.3-70b-versatile"
+
   body = {
-    "model": "llama-3.3-70b-versatile",
+    "model": model_name,
     "messages":[
       {
         "role":"user",
