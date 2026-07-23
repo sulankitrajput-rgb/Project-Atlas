@@ -38,8 +38,7 @@ def ask():
       }
     ]
   }
-
-response = requests.post(
+  response = requests.post(
 
   "https://api.groq.com/openai/v1/chat/completions",
   headers=headers,
