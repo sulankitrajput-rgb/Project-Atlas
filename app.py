@@ -16,12 +16,10 @@ def home():
 
 @app.route("/ask",methods=["POST"])
 def ask():
-  print("HEADER:", request.headers)
-  print("BODY:",
-        request.get_data(as_text=True))
-  return "Recived"
-          
 
+  data = request.get_json()
+  question = data["question"]
+          
   gemini = requests.post(
 
     f"htps://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}",
