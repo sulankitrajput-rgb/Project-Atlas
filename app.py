@@ -4,9 +4,8 @@ import os
 
 app = Flask(__name__)
 
-GEMINI_KEY =os.getenv("GEMINI_KEY")
 GROQ_KEY = os.getenv("GROQ_KEY")
-DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
+
 
 import json 
 
@@ -19,39 +18,45 @@ def ask():
 
   import json
 
-  data = request.get_json(silent=True)
+  data = request.get_json()
 
-  if data is None:
-    data = json.loads(request.get_data(as_text=True))
+  if not data:
+    return jsonify({"error":"No JSON received"}), 400
 
-  question = data["question"]
-          
-  gemini = requests.post(
-
-    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key={GEMINI_KEY}",
-    json={
-      "contents":[
-        {
-          "parts":[
-            {"text":question}
-          ]
-        }
-      ]
-    }
-  ).json()
-
-  print("Gemini Response:", gemini)
-
-  if "candidates" not in gemini:
-    return jsonify(gemini), 500
+  question = data.get("question")
   
-  answer = gemini["candidates"][0]["content"]["parts"][0]["text"]
-  return jsonify({
-  "answer": answer
-  })
+  headers = {
+    "Authorization":f"Bearer {GROQ_KEY}",
+    "Content-Type": "application/json"
+  }
+  body = {
+    "model": "llama-3.3-70b-versatile",
+    "messages":[
+      {
+        "role":"user",
+        "content":question
+      }
+    ]
+  }
+
+response = requests.post(
+
+  "https://api.groq.com/openai/v1/chat/completions",
+  headers=headers,
+  json=body
+)
+
+result = response.json()
+
+if"choices"not in result:
+  return jsonify(result), 500
+
+answer = result["choices"][0]["message"]["content"]
+
+return jsonify({"answer": answer})
 
 if __name__=="__main__":
-  app.run(host="0.0.0.0",port=5000,debug=True)
+  app.run(host="0.0.0.0",port=5000)
           
         
   
