@@ -19,7 +19,7 @@ def ask():
   print("HEADER:", request.headers)
   print("BODY:",
         request.get_data(as_text=True))
-                         return"Received"
+  return "Recived"
           
 
   gemini = requests.post(
