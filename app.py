@@ -30,7 +30,7 @@ def ask():
     "Authorization":f"Bearer {GROQ_KEY}",
     "Content-Type": "application/json"
   }
-  if model == "deepseek":
+  if model.lower() == "deepseek":
     model_name ="deepseek-r1-distill-llama-70b"
   else:
     model_name = "llama-3.3-70b-versatile"
