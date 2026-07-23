@@ -49,7 +49,9 @@ result = response.json()
 
 if "choices" not in result:
   return jsonify(result), 500
+  
   answer = result["choices"][0]["message"]["content"]
+  
   return jsonify({"answer": answer})
 
 if __name__=="__main__":
