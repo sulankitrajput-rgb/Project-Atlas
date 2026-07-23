@@ -50,6 +50,11 @@ def ask():
     answer = result["choices"][0]["message"]["content"]
     return jsonify({"answer": answer})
 
+@app.route("/test",methods=["POST"])
+def test():
+  return request.get_data(as_text=True)
+  
+
 if __name__=="__main__":
   app.run(host="0.0.0.0",port=5000)
           
