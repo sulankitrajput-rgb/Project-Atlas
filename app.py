@@ -44,11 +44,15 @@ def ask():
   headers=headers,
   json=body
 )
+  print(response.status_code)
+  print(response.text)
+  
   result = response.json()
   if "choices" not in result:
     return jsonify(result), 500
-    answer = result["choices"][0]["message"]["content"]
-    return jsonify({"answer": answer})
+    
+  answer = result["choices"][0]["message"]["content"]
+  return jsonify({"answer": answer})
 
 @app.route("/test",methods=["POST"])
 def test():
