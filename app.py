@@ -50,10 +50,8 @@ result = response.json()
 
 if "choices" not in result:
   return jsonify(result), 500
-
-answer = result["choices"][0]["message"]["content"]
-
-return jsonify({"answer": answer})
+  answer = result["choices"][0]["message"]["content"]
+  return jsonify({änswer": answer})
 
 if __name__=="__main__":
   app.run(host="0.0.0.0",port=5000)
