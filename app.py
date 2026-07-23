@@ -40,7 +40,10 @@ def ask():
     }
   ).json()
 
-  print(gemini)
+  print("Gemini Response:", gemini)
+
+  if "candidates" not in gemini:
+    return jsonify(gemini), 500
   
   answer = gemini["candidates"][0]["content"]["parts"][0]["text"]
   return jsonify({
