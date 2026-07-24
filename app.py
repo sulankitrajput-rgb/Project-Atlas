@@ -47,12 +47,21 @@ def ask():
       }
     ]
   }
-  response = requests.post(
 
-  "https://api.groq.com/openai/v1/chat/completions",
+  if model.lower() == "deepseek":
+    url =
+    "https://api.deepseek.com/chat/completions"
+  else:
+    url = 
+    "https://api.groq.com/openai/v1/chat/completions"
+
+  response = requests.post(
+    url,
   headers=headers,
   json=body
 )
+  print(response.status_code)
+  print(response.text)
   
   result = response.json()
   if "choices" not in result:
