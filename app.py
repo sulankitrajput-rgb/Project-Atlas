@@ -34,8 +34,7 @@ def ask():
   if model.lower() == "deepseek":
 
     headers = {
-      "Authorization":f"Bearer
-      {DEEPSEEK_KEY}",
+      "Authorization":f"Bearer {DEEPSEEK_KEY}",
       "Content-Type": "application/json
     }
     
