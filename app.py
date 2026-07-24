@@ -35,7 +35,7 @@ def ask():
 
     headers = {
       "Authorization":f"Bearer {DEEPSEEK_KEY}",
-      "Content-Type": "application/json
+      "Content-Type": "application/json"
     }
     
   body = {
