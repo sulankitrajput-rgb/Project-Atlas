@@ -5,6 +5,7 @@ import os
 app = Flask(__name__)
 
 GROQ_KEY = os.getenv("GROQ_KEY")
+DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 
 
 import json 
@@ -31,12 +32,15 @@ def ask():
     "Content-Type": "application/json"
   }
   if model.lower() == "deepseek":
-    model_name ="deepseek-r1-distill-llama-70b-specdec"
-  else:
-    model_name = "llama-3.3-70b-versatile"
 
+    headers = {
+      "Authorization":f"Bearer
+      {DEEPSEEK_KEY}",
+      "Content-Type": "application/json
+    }
+    
   body = {
-    "model": model_name,
+    "model": "deepseek-chat",
     "messages":[
       {
         "role":"user",
@@ -50,8 +54,6 @@ def ask():
   headers=headers,
   json=body
 )
-  print(response.status_code)
-  print(response.text)
   
   result = response.json()
   if "choices" not in result:
