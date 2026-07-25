@@ -67,7 +67,7 @@ def ask():
 
   else:
     headers = {
-      "Authorization":f"Bearer{GROQ-KEY}",
+      "Authorization":f"Bearer{GROQ_KEY}",
       "Content-Type": "application/json"
     }
     url = "https://api.groq.com/openai/v1/chat/completions"
