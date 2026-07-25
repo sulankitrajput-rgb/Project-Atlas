@@ -28,7 +28,7 @@ def ask():
   model = data.get("model","llama")
   
   headers = {
-    "Authorization":f"Bearer {GROQ_KEY}",
+    "Authorization": f"Bearer {GROQ_KEY}",
     "Content-Type": "application/json"
   }
   if model.lower() == "deepseek":
@@ -39,7 +39,7 @@ def ask():
     }
     
   body = {
-    "model": "deepseek-reasoner",
+    "model": "deepseek-chat",
     "messages":[
       {
         "role":"user",
@@ -65,7 +65,6 @@ def ask():
     }
 
   else:
-
     headers = {
       "Authorization":f"Bearer{GROQ-KEY}",
       "Content-Type": "application/json"
