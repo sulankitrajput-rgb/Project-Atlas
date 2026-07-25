@@ -29,7 +29,7 @@ def ask():
   model = data.get("model","llama")
   
   headers = {
-    "Authorization": f"Bearer  {GROQ_KEY}",
+    "Authorization": f"Bearer {GROQ_KEY}",
     "Content-Type": "application/json"
   }
   if model.lower() == "deepseek":
