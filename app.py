@@ -80,7 +80,7 @@ def ask():
         }
       ]
     }
-    print(headers)
+    print(repr(headers["Authorization"]))
     response = requests.post(
     url,
   headers=headers,
