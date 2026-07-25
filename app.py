@@ -51,7 +51,7 @@ def ask():
   if model.lower() == "deepseek":
     headers = {
       "Authorization":f"Bearer {DEEPSEEK_KEY}",
-      "Content-Type": "application/json
+      "Content-Type": "application/json"
     }
     url ="htps://api.deepseek.com/chat/completions"
     body = {
