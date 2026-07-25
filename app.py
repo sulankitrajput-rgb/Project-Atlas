@@ -49,10 +49,38 @@ def ask():
   }
 
   if model.lower() == "deepseek":
-    url ="https://api.deepseek.com/chat/completions"
-  else:
-    url ="https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+      "Authorization":f"Bearer {DEEPSEEK_KEY}",
+      "Content-Type": "application/json
+    }
+    url ="htps://api.deepseek.com/chat/completions"
+    body = {
+      "model": "deepseek-chat",
+      "messages": [
+        {
+          "role": "user",
+          "content": question
+        }
+      ]
+    }
 
+  else:
+
+    headers = {
+      "Authorization":f"Bearer{GROQ-KEY}",
+      "Content-Type": "application/json
+    }
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    body = {
+      "model": "llama-3.3-70b-versatile",
+      "message": [
+        {
+          "role": "user",
+          "content": question
+        }
+      ]
+    }
+    
   response = requests.post(
     url,
   headers=headers,
