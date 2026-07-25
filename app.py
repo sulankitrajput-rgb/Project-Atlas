@@ -67,21 +67,21 @@ def ask():
 
   else:
     headers = {
-      "Authorization":f"Bearer{GROQ_KEY}",
+      "Authorization":"Bearer" + GROQ_KEY,
       "Content-Type": "application/json"
     }
     url = "https://api.groq.com/openai/v1/chat/completions"
     body = {
-      "model": "llama-3.3-70b-versatile",
-      "message": [
+      "model":"llama-3.3-70b-versatile",
+      "messages": [
         {
           "role": "user",
           "content": question
         }
       ]
     }
-    
-  response = requests.post(
+    print(headers)
+    response = requests.post(
     url,
   headers=headers,
   json=body
