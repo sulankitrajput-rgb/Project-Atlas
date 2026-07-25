@@ -39,7 +39,7 @@ def ask():
     }
     
   body = {
-    "model": "deepseek-chat",
+    "model": "deepseek-reasoner",
     "messages":[
       {
         "role":"user",
