@@ -49,11 +49,9 @@ def ask():
   }
 
   if model.lower() == "deepseek":
-    url =
-    "https://api.deepseek.com/chat/completions"
+    url ="https://api.deepseek.com/chat/completions"
   else:
-    url = 
-    "https://api.groq.com/openai/v1/chat/completions"
+    url ="https://api.groq.com/openai/v1/chat/completions"
 
   response = requests.post(
     url,
