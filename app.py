@@ -1,3 +1,4 @@
+print("VERSION 25 JULY TEST")
 from flask import Flask,request,jsonify
 import requests
 import os 
