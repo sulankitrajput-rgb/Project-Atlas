@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 GROQ_KEY = os.getenv("GROQ_KEY")
 DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
-
+print("Groq key loaded:",GROQ_KEY[:10] if GROQ_KEY else "NOT FOUND")
 
 import json 
 
