@@ -53,7 +53,7 @@ def ask():
       "Authorization":f"Bearer {DEEPSEEK_KEY}",
       "Content-Type": "application/json"
     }
-    url ="htps://api.deepseek.com/chat/completions"
+    url ="https://api.deepseek.com/chat/completions"
     body = {
       "model": "deepseek-chat",
       "messages": [
