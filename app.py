@@ -41,6 +41,7 @@ def ask():
       }
     ]
   }
+
 else:
 url = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -59,6 +60,8 @@ body = {
     }
   ]
 }
+
+print(headers["Authorization"][:20])
 
 response = requests.post(
   url,
