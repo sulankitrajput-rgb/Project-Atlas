@@ -35,7 +35,7 @@ def ask():
   if model.lower() == "deepseek":
 
     headers = {
-      "Authorization": "Bearer" + DEEPSEEK_KEY,
+      "Authorization": "Bearer"  + DEEPSEEK_KEY,
       "Content-Type": "application/json"
     }
     
@@ -81,7 +81,7 @@ def ask():
       ]
     }
     print(repr(headers["Authorization"]))
-    response = requests.post(
+response = requests.post(
     url,
   headers=headers,
   json=body
