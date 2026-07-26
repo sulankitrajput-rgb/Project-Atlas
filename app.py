@@ -18,63 +18,65 @@ def home():
 @app.route("/ask",methods=["POST"])
 def ask():
 
-  import json
-
   data = request.get_json(force=True)
-
   if not data:
-    return jsonify({"error":"No JSON received"}), 400
+    return jsonify({"error": "NO JSON recieved"}), 400
+    
+    question =data.get("question")
+    model = data.get("model","llama").lower()
+    
+    if model == "deepseek":
+      url = "https://api.deepseek.com/chat/completions"
 
-  question = data.get("question")
-  model = data.get("model","llama")
+  headers = {
+    "Authorization": f"Bearer {DEEPSEEK_KEY}",
+    "Content-Type": "application/json"
+  }
+  body = {
+    "model": "deepseek-chat",
+    "messages": [
+      {
+        "role": "user",
+        "content": question
+      }
+    ]
+  }
+else:
+url = "https://api.groq.com/openai/v1/chat/completions"
 
-  if model.lower() == "deepseek":
-    headers = {
-      "Authorization":f"Bearer {DEEPSEEK_KEY}",
-      "Content-Type": "application/json"
-    }
-    url ="https://api.deepseek.com/chat/completions"
-    body = {
-      "model": "deepseek-chat",
-      "messages": [
-        {
-          "role": "user",
-          "content": question
-        }
-      ]
-    }
 
-  else:
-    headers = {
-      "Authorization":"Bearer" + GROQ_KEY,
-      "Content-Type": "application/json"
+headers = {
+  "Authorization": f"Bearer {GROQ_KEY}",
+  "Content-Type": "application/json"
+}
+
+body = {
+  "model": "llama-3.3-70b-versatile",
+  "messages": [
+    {
+      "role": "user",
+      "content": question
     }
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    body = {
-      "model":"llama-3.3-70b-versatile",
-      "messages": [
-        {
-          "role": "user",
-          "content": question
-        }
-      ]
-    }
-    print(repr(headers["Authorization"]))
+  ]
+}
+
 response = requests.post(
-    url,
+  url,
   headers=headers,
   json=body
 )
 
-  print(response.status_code)
-  print(response.text)
-  
-  result = response.json()
-  if "choices" not in result:
-    return jsonify(result), 500
-    
-  answer = result["choices"][0]["message"]["content"]
-  return jsonify({"answer": answer})
+print(response.status_code)
+print(response.text)
+
+result = response.json()
+
+if "choices" not in result:
+  return jsonify(result), 500
+
+answer = result["choices"][0]["message"]["content"]
+
+return jsonify({"answer": answer})
 
 @app.route("/test",methods=["POST"])
 def test():
