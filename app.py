@@ -1,96 +1,107 @@
-print("VERSION 25 JULY TEST")
-from flask import Flask,request,jsonify
+from flask import Flask, request, jsonify
 import requests
-import os 
+import os
 
 app = Flask(__name__)
 
 GROQ_KEY = os.getenv("GROQ_KEY")
 DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
-print("Groq key loaded:",GROQ_KEY[:10] if GROQ_KEY else "NOT FOUND")
 
-import json 
+print("Project Atlas Started")
+print("Groq key loaded:", GROQ_KEY[:10] if GROQ_KEY else "NOT FOUND")
+print("DeepSeek key loaded:", DEEPSEEK_KEY[:10] if DEEPSEEK_KEY else "NOT FOUND")
 
-@app.route("/")   
+
+@app.route("/")
 def home():
-  return "Project Atlas is runing!" 
+    return "Project Atlas is running!"
 
-@app.route("/ask",methods=["POST"])
+
+@app.route("/ask", methods=["POST"])
 def ask():
 
-  data = request.get_json(force=True)
-  if not data:
-    return jsonify({"error": "NO JSON recieved"}), 400
-    
-    question =data.get("question")
-    model = data.get("model","llama").lower()
-    
+    data = request.get_json(force=True)
+
+    if not data:
+        return jsonify({"error": "No JSON received"}), 400
+
+    question = data.get("question")
+    model = data.get("model", "llama").lower()
+
+    # -------------------------
+    # DeepSeek
+    # -------------------------
     if model == "deepseek":
-      url = "https://api.deepseek.com/chat/completions"
 
-  headers = {
-    "Authorization": f"Bearer {DEEPSEEK_KEY}",
-    "Content-Type": "application/json"
-  }
-  body = {
-    "model": "deepseek-chat",
-    "messages": [
-      {
-        "role": "user",
-        "content": question
-      }
-    ]
-  }
+        url = "https://api.deepseek.com/chat/completions"
 
-else: 
-url = "https://api.groq.com/openai/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {DEEPSEEK_KEY}",
+            "Content-Type": "application/json"
+        }
 
-headers = {
-  "Authorization": f"Bearer {GROQ_KEY}",
-  "Content-Type": "application/json"
-}
+        body = {
+            "model": "deepseek-chat",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ]
+        }
 
-body = {
-  "model": "llama-3.3-70b-versatile",
-  "messages": [
-    {
-      "role": "user",
-      "content": question
-    }
-  ]
-}
+    # -------------------------
+    # Groq (Llama)
+    # -------------------------
+    else:
 
-print(headers["Authorization"][:20])
+        url = "https://api.groq.com/openai/v1/chat/completions"
 
-response = requests.post(
-  url,
-  headers=headers,
-  json=body
-)
+        headers = {
+            "Authorization": f"Bearer {GROQ_KEY}",
+            "Content-Type": "application/json"
+        }
 
-print(response.status_code)
-print(response.text)
+        body = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ]
+        }
 
-result = response.json()
+    print("URL:", url)
+    print("AUTH:", repr(headers["Authorization"]))
 
-if "choices" not in result:
-  return jsonify(result), 500
+    response = requests.post(
+        url,
+        headers=headers,
+        json=body
+    )
 
-answer = result["choices"][0]["message"]["content"]
+    print("Status:", response.status_code)
+    print("Response:", response.text)
 
-return jsonify({"answer": answer})
+    if response.status_code != 200:
+        return jsonify({
+            "error": response.text
+        }), response.status_code
 
-@app.route("/test",methods=["POST"])
+    result = response.json()
+
+    answer = result["choices"][0]["message"]["content"]
+
+    return jsonify({
+        "answer": answer
+    })
+
+
+@app.route("/test", methods=["POST"])
 def test():
-  return request.get_data(as_text=True)
-  
+    return request.get_data(as_text=True)
 
-if __name__=="__main__":
-  app.run(host="0.0.0.0",port=5000)
-          
-        
-  
-  
-  
 
-  
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
