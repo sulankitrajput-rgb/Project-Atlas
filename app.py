@@ -81,8 +81,8 @@ def ask():
         json=body
     )
 
-    print("Status:", response.status_code)
-    print("Response:", response.text)
+    print(response.status_code)
+    print(response.text)
 
     if response.status_code != 200:
         return jsonify({
