@@ -27,27 +27,6 @@ def ask():
 
   question = data.get("question")
   model = data.get("model","llama")
-  
-  headers = {
-    "Authorization": "Bearer" + GROQ_KEY,
-    "Content-Type": "application/json"
-  }
-  if model.lower() == "deepseek":
-
-    headers = {
-      "Authorization": "Bearer"  + DEEPSEEK_KEY,
-      "Content-Type": "application/json"
-    }
-    
-  body = {
-    "model": "deepseek-chat",
-    "messages":[
-      {
-        "role":"user",
-        "content":question
-      }
-    ]
-  }
 
   if model.lower() == "deepseek":
     headers = {
