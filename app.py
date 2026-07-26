@@ -65,6 +65,7 @@ response = requests.post(
   headers=headers,
   json=body
 )
+
   print(response.status_code)
   print(response.text)
   
