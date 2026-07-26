@@ -42,7 +42,8 @@ def ask():
     ]
   }
  
-  else: url = "https://api.groq.com/openai/v1/chat/completions"
+  else: 
+  url = "https://api.groq.com/openai/v1/chat/completions"
 
 headers = {
   "Authorization": f"Bearer {GROQ_KEY}",
