@@ -11,6 +11,7 @@ GROQ_KEY = os.getenv("GROQ_KEY")
 GEMINI_KEY = os.getenv("GEMINI_KEY")
 DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 OPENAI_KEY = os.getenv("OPENAI_KEY")
+ANTHROPIC_KEY = os.getenv("ANTHROPIC_KEY")
 
 print("===== PROJECT ATLAS =====")
 print("Groq      :", "Loaded" if GROQ_KEY else "Missing")
@@ -127,7 +128,38 @@ def ask_openai(question):
     result = response.json()
     return {"answer": result["choices"][0]["message"]["content"]}
 
-    
+def ask_claude(question):
+
+    url = "https://api.anthropic.com/v1/messages"
+
+    headers = {
+        "x-api-key": ANTHROPIC_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+    }
+
+    body = {
+        "model": "claude-3-5-haiku-latest",
+        "max_tokens": 1024,
+        "messages": [
+            {
+                "role": "user",
+                "content": question
+            }
+        ]
+    }
+
+    response = requests.post(url, headers=headers, json=body)
+
+    if response.status_code != 200:
+        return {"error": response.text}
+
+    result = response.json()
+
+    return {
+        "answer": result["content"][0]["text"]
+    }
+  
 # ==========================
 # DEEPSEEK
 # ==========================
@@ -183,6 +215,9 @@ def ask():
     elif model == "deepseek":
         result = ask_deepseek(question)
 
+  elif model == "claude":
+    result = ask_claude(question)  
+    
     else:
         result = ask_groq(question)
 
