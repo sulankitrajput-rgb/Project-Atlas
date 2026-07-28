@@ -214,8 +214,8 @@ def ask():
 
     elif model == "deepseek":
         result = ask_deepseek(question)
-
-  elif model == "claude":
+    
+    elif model == "claude":
     result = ask_claude(question)  
     
     else:
