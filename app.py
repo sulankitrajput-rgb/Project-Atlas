@@ -214,10 +214,10 @@ def ask():
 
     elif model == "deepseek":
         result = ask_deepseek(question)
-    
+
     elif model == "claude":
-    result = ask_claude(question)  
-    
+        result = ask_claude(question)
+       
     else:
         result = ask_groq(question)
 
