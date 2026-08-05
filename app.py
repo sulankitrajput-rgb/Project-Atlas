@@ -223,6 +223,22 @@ def ask():
 
     return jsonify(result)
 
+@app.route("/compare", methods=["POST"])
+def compare():
+
+    data = request.get_json()
+
+    question = data.get("question")
+
+    results = {
+        "chatgpt": ask_openai(question),
+        "gemini": ask_gemini(question),
+        "groq": ask_groq(question),
+        "claude": ask_claude(question),
+        "deepseek": ask_deepseek(question)
+    }
+
+    return jsonify(results)
 
 # ==========================
 # TEST ROUTE
