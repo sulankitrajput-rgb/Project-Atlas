@@ -253,13 +253,30 @@ def compare():
     except Exception as e:
         deepseek = {"error": str(e)}
 
-    return jsonify({
-        "chatgpt": chatgpt,
-        "gemini": gemini,
-        "groq": groq,
-        "claude": claude,
-        "deepseek": deepseek
-    })
+    final_answer = f"""
+PROJECT ATLAS
+AI COMPARISON
+
+Question:
+{question}
+
+ChatGPT
+{get_text(chatgpt)}
+
+Gemini
+{get_text(gemini)}
+
+Groq
+{get_text(groq)}
+
+Claude
+{get_text(claude)}
+
+DeepSeek
+{get_text(deepseek)}
+"""
+
+return final_answer
 
 def get_text(response):
     if isinstance(response, dict):
