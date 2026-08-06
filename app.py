@@ -225,14 +225,7 @@ def ask():
 
 @app.route("/compare", methods=["POST"])
 def compare():
-    data = request.get_json()
-    question = data.get("question", "")
-
-    chatgpt = ask_openai(question)
-    gemini = ask_gemini(question)
-    groq = ask_groq(question)
-    claude = ask_claude(question)
-    deepseek = ask_deepseek(question)
+    return "COMPARE ROUTE WORKING"
 
 def get_text(response):
     if isinstance(response, dict):
