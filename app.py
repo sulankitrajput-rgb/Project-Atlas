@@ -228,9 +228,38 @@ def compare():
     data = request.get_json()
     question = data.get("question", "")
 
-    chatgpt = ask_openai(question)
+    try:
+        chatgpt = ask_openai(question)
+    except Exception as e:
+        chatgpt = {"error": str(e)}
 
-    return jsonify(chatgpt)
+    try:
+        gemini = ask_gemini(question)
+    except Exception as e:
+        gemini = {"error": str(e)}
+
+    try:
+        groq = ask_groq(question)
+    except Exception as e:
+        groq = {"error": str(e)}
+
+    try:
+        claude = ask_claude(question)
+    except Exception as e:
+        claude = {"error": str(e)}
+
+    try:
+        deepseek = ask_deepseek(question)
+    except Exception as e:
+        deepseek = {"error": str(e)}
+
+    return jsonify({
+        "chatgpt": chatgpt,
+        "gemini": gemini,
+        "groq": groq,
+        "claude": claude,
+        "deepseek": deepseek
+    })
 
 def get_text(response):
     if isinstance(response, dict):
