@@ -226,7 +226,11 @@ def ask():
 @app.route("/compare", methods=["POST"])
 def compare():
     data = request.get_json()
-    return jsonify(data)
+    question = data.get("question", "")
+
+    chatgpt = ask_openai(question)
+
+    return jsonify(chatgpt)
 
 def get_text(response):
     if isinstance(response, dict):
