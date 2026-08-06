@@ -225,7 +225,8 @@ def ask():
 
 @app.route("/compare", methods=["POST"])
 def compare():
-    return "COMPARE ROUTE WORKING"
+    data = request.get_json()
+    return jsonify(data)
 
 def get_text(response):
     if isinstance(response, dict):
