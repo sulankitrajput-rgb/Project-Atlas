@@ -275,8 +275,7 @@ Claude
 DeepSeek
 {get_text(deepseek)}
 """
-
-return final_answer
+    return final_answer
 
 def get_text(response):
     if isinstance(response, dict):
