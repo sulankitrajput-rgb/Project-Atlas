@@ -225,20 +225,46 @@ def ask():
 
 @app.route("/compare", methods=["POST"])
 def compare():
-
     data = request.get_json()
+    question = data.get("question", "")
 
-    question = data.get("question")
+    chatgpt = ask_openai(question)
+    gemini = ask_gemini(question)
+    groq = ask_groq(question)
+    claude = ask_claude(question)
+    deepseek = ask_deepseek(question)
 
-    results = {
-        "chatgpt": ask_openai(question),
-        "gemini": ask_gemini(question),
-        "groq": ask_groq(question),
-        "claude": ask_claude(question),
-        "deepseek": ask_deepseek(question)
-    }
+    def get_text(result):
+        if isinstance(result, dict):
+            if "answer" in result:
+                return result["answer"]
+            if "error" in result:
+                return "❌ " + result["error"]
+        return str(result)
 
-    return jsonify(results)
+    final_answer = f"""
+ ChatGPT
+────────────────────────
+{get_text(chatgpt)}
+
+ Gemini
+────────────────────────
+{get_text(gemini)}
+
+ Groq
+────────────────────────
+{get_text(groq)}
+
+ Claude
+────────────────────────
+{get_text(claude)}
+
+ DeepSeek
+────────────────────────
+{get_text(deepseek)}
+"""
+
+    return final_answer
 
 # ==========================
 # TEST ROUTE
