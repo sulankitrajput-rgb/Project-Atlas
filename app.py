@@ -234,8 +234,8 @@ def compare():
     claude = ask_claude(question)
     deepseek = ask_deepseek(question)
 
-    def get_text(result):
-        if isinstance(response, dict):
+    def get_text(response):
+    if isinstance(response, dict):
         if "answer" in response:
             text = response["answer"]
         elif "error" in response:
