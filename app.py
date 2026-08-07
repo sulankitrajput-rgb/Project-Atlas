@@ -284,7 +284,7 @@ def get_text(response):
     # Normal answer
     if "answer" in response:
         return response["answer"]
-
+        
     # Error handling
     if "error" in response:
     error = response["error"]
