@@ -287,7 +287,7 @@ def get_text(response):
         
     # Error handling
     if "error" in response:
-    error = response["error"]
+        error = response["error"]
 
     if isinstance(error, dict):
         error = str(error)
