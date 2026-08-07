@@ -278,23 +278,30 @@ DeepSeek
     return final_answer
 
 def get_text(response):
-    if isinstance(response, dict):
-        if "answer" in response:
-            text = response["answer"]
-        elif "error" in response:
-            text = "❌ " + str(response["error"])
+    if not isinstance(response, dict):
+        return str(response)
+
+    # Normal answer
+    if "answer" in response:
+        return response["answer"]
+
+    # Error handling
+    if "error" in response:
+        error = str(response["error"])
+
+        if "Insufficient Balance" in error:
+            return "❌ API balance exhausted. Please recharge this AI provider."
+
+        elif "503" in error or "UNAVAILABLE" in error:
+            return "⚠️ Service is temporarily unavailable. Please try again later."
+
+        elif "invalid_api_key" in error or "Unauthorized" in error:
+            return "🔑 Invalid API key."
+
         else:
-            text = str(response)
-    else:
-        text = str(response)
+            return "❌ " + error.replace("\\n", " ")
 
-    text = text.replace("###", "")
-    text = text.replace("##", "")
-    text = text.replace("**", "")
-    text = text.replace("`", "")
-    text = text.replace("* ", "• ")
-
-    return text.strip()
+    return str(response)
 
     final_answer = f"""
 ══════════════════════════════════════
