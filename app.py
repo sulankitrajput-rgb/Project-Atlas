@@ -287,21 +287,22 @@ def get_text(response):
 
     # Error handling
     if "error" in response:
-        error = str(response["error"])
+    error = response["error"]
 
-        if "Insufficient Balance" in error:
-            return "❌ API balance exhausted. Please recharge this AI provider."
+    if isinstance(error, dict):
+        error = str(error)
 
-        elif "503" in error or "UNAVAILABLE" in error:
-            return "⚠️ Service is temporarily unavailable. Please try again later."
+    if "credit balance is too low" in error.lower():
+        return "❌ API balance exhausted. Please recharge Claude."
 
-        elif "invalid_api_key" in error or "Unauthorized" in error:
-            return "🔑 Invalid API key."
+    elif "insufficient balance" in error.lower():
+        return "❌ API balance exhausted."
 
-        else:
-            return "❌ " + error.replace("\\n", " ")
+    elif "503" in error or "UNAVAILABLE" in error:
+        return "⚠️ Service is temporarily unavailable."
 
-    return str(response)
+    else:
+        return "❌ " + error
 
     final_answer = f"""
 ══════════════════════════════════════
