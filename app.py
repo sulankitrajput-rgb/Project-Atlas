@@ -68,10 +68,11 @@ def ask_gemini(question, image=""):
     headers = {
         "Content-Type": "application/json",
         "x-goog-api-key": GEMINI_KEY  # Passed via header for safety
-    } 
+    }
+
     if image and image.startswith("http"):
-    image_response = requests.get(image)
-    image_data = base64.b64encode(image_response.content).decode("utf-8")
+        image_response = requests.get(image)
+        image_data = base64.b64encode(image_response.content).decode("utf-8")
 
     body = {
         "contents": [
@@ -104,7 +105,6 @@ else:
     }
     
     
-
     response = requests.post(url, headers=headers, json=body)
 
     if response.status_code != 200:
