@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import requests
 import os
+import base64
 
 app = Flask(__name__)
 
@@ -61,7 +62,7 @@ def ask_groq(question):
 # ==========================
 # GEMINI (UPDATED)
 # ==========================
-def ask_gemini(question):
+def ask_gemini(question, image=""):
     url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent"
 
     headers = {
@@ -69,6 +70,28 @@ def ask_gemini(question):
         "x-goog-api-key": GEMINI_KEY  # Passed via header for safety
     }
 
+    if image:
+    image_response = requests.get(image)
+    image_data = base64.b64encode(image_response.content).decode("utf-8")
+
+    body = {
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": question
+                    },
+                    {
+                        "inline_data": {
+                            "mime_type": "image/jpeg",
+                            "data": image_data
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+else:
     body = {
         "contents": [
             {
@@ -235,9 +258,9 @@ def compare():
         chatgpt = {"error": str(e)}
 
     try:
-        gemini = ask_gemini(question)
+        gemini = ask_gemini(question, image)
     except Exception as e:
-        gemini = {"error": str(e)}
+        gemini = {"error": str(e)} 
 
     try:
         groq = ask_groq(question)
