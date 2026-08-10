@@ -227,6 +227,7 @@ def ask():
 def compare():
     data = request.get_json()
     question = data.get("question", "")
+    image = data.get("image","")
 
     try:
         chatgpt = ask_openai(question)
