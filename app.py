@@ -444,7 +444,7 @@ pre {{
 </body>
 </html>
 """
-    return final_answer
+    return jsonify({"answer": final_answer})
 
 # ==========================
 # TEST ROUTE
