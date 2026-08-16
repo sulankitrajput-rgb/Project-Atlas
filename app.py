@@ -328,7 +328,7 @@ Claude
 DeepSeek
 {get_text(deepseek)}
 """
-    return final_answer
+    return jsonify({"answer": final_answer})
 
 def get_text(response):
     if not isinstance(response, dict):
