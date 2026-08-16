@@ -328,7 +328,7 @@ Claude
 DeepSeek
 {get_text(deepseek)}
 """
-    return jsonify({"answer": final_answer})
+    return final_answer
 
 def get_text(response):
     if not isinstance(response, dict):
@@ -444,7 +444,7 @@ pre {{
 </body>
 </html>
 """
-    return jsonify({"answer": final_answer})
+    return final_answer
 
 # ==========================
 # TEST ROUTE
