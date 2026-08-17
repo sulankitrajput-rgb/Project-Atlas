@@ -277,18 +277,13 @@ def ask():
 
 @app.route("/compare", methods=["POST"])
 def compare():
-    data = request.get_json(silent=True)
+    print("===== COMPARE TEST =====")
+    print("Content-Type:", request.content_type)
+    print("Raw:", request.get_data(as_text=True))
 
-    print("DEBUG CONTENT TYPE:",request.content_type)
-    print("DEBUG RAW DATA:",request.data)
-    print("DEBUG JSON DATA:", data)
-
-    if not data:
-        return jsonify({"error": "No valid JSON received"}), 400
-
-    question = data.get("question","")
-    image = data.get("image","")
-
+    return jsonify({
+        "answer": "SUCCESS! Project Atlas received the request."
+    })
 
     try:
         chatgpt = ask_openai(question)
