@@ -101,57 +101,177 @@ async function askAtlas() {
 
 </script>
 
-        .header {
-            background: #1769ff;
-            color: white;
-            text-align: center;
-            padding: 25px;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        .header h1 {
-            margin: 0;
-            font-size: 32px;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #222;
+}
 
-        .header p {
-            margin: 8px 0 0;
-            font-size: 17px;
-        }
+/* HEADER */
+header {
+    background: linear-gradient(135deg, #1769ff, #0d47a1);
+    color: white;
+    text-align: center;
+    padding: 28px 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
 
-        .container {
-            max-width: 850px;
-            margin: 30px auto;
-            padding: 20px;
-        }
+header h1 {
+    margin: 0;
+    font-size: 32px;
+    letter-spacing: 1px;
+}
 
-        textarea {
-            width: 100%;
-            height: 130px;
-            box-sizing: border-box;
-            padding: 15px;
-            font-size: 18px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
+header p {
+    margin: 8px 0 0;
+    font-size: 15px;
+    opacity: 0.9;
+}
 
-        button {
-            width: 100%;
-            margin-top: 15px;
-            padding: 16px;
-            background: #1769ff;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
+/* MAIN CONTAINER */
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 30px auto;
+}
 
-        #loading {
-            display: none;
-            text-align: center;
-            margin: 20px;
-            font-size: 18px;
-        }
+/* QUESTION BOX */
+textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 16px;
+    font-size: 16px;
+    border: 2px solid #d6dce5;
+    border-radius: 12px;
+    resize: vertical;
+    outline: none;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+textarea:focus {
+    border-color: #1769ff;
+    box-shadow: 0 0 0 3px rgba(23,105,255,0.12);
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 15px;
+    background: #1769ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #0d47a1;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* LOADING */
+#loading {
+    display: none;
+    text-align: center;
+    margin: 25px 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #1769ff;
+}
+
+/* RESULTS */
+#results {
+    margin-top: 25px;
+}
+
+/* AI RESULT CARD */
+.card {
+    background: white;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-left: 6px solid #1769ff;
+    overflow-x: auto;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+/* RESULT TEXT */
+.card pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* DIFFERENT AI COLORS */
+.card-chatgpt {
+    border-left-color: #10a37f;
+}
+
+.card-gemini {
+    border-left-color: #4285f4;
+}
+
+.card-groq {
+    border-left-color: #f97316;
+}
+
+.card-claude {
+    border-left-color: #d97706;
+}
+
+.card-deepseek {
+    border-left-color: #2563eb;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    .container {
+        width: 94%;
+        margin: 20px auto;
+    }
+
+    textarea {
+        min-height: 110px;
+        font-size: 15px;
+    }
+
+    button {
+        font-size: 15px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+}
     </style>
 </head>
 
@@ -184,14 +304,14 @@ async function askAtlas() {
 async function askAtlas() {
 
     const question =
-        globalThis.document.getElementById("question").value.trim();
+        document.getElementById("question").value.trim();
 
     if (!question) {
         alert("Please enter a question.");
         return;
     }
 
-    globalThis.document.getElementById("loading").style.display = "block";
+    document.getElementById("loading").style.display = "block";
 
     try {
 
@@ -215,7 +335,7 @@ async function askAtlas() {
             return;
         }
 
-        globalThis.document.getElementByld("results").innerHTML =
+        document.getElementByld("results").innerHTML =
         "<div class='result-card'><pre>" + result + "</pre></div>";
 
     } catch (error) {
