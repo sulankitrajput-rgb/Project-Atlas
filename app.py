@@ -27,7 +27,7 @@ print("OpenAI    :", "Loaded" if OPENAI_KEY else "Missing")
 # ==========================
 # HOME PAGE
 # ==========================
-@app.route("/", methos=["GET"])
+@app.route("/", methods=["GET"])
 @app.route("/atlas", 
 methods=["GET"])
 def atlas():
