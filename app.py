@@ -42,9 +42,9 @@ def atlas():
 
 async function askAtlas() {
 
-    const question = document.getElementById("question").value.trim();
-    const result = document.getElementById("result");
-    const loading = document.getElementById("loading");
+    const question = window.document.getElementById("question").value.trim();
+    const result = window.document.getElementById("result");
+    const loading = window.document.getElementById("loading");
 
     if (!question) {
         alert("Please enter a question.");
@@ -304,14 +304,14 @@ button:active {
 async function askAtlas() {
 
     const question =
-        document.getElementById("question").value.trim();
+        window.document.getElementById("question").value.trim();
 
     if (!question) {
         alert("Please enter a question.");
         return;
     }
 
-    document.getElementById("loading").style.display = "block";
+    window.document.getElementById("loading").style.display = "block";
 
     try {
 
@@ -330,17 +330,17 @@ async function askAtlas() {
         const result = await response.text();
 
         if (!response.ok) {
-            document.body.innerHTML =
+            window.document.body.innerHTML =
                 "<h2>Error</h2><pre>" + result + "</pre>";
             return;
         }
 
-        document.getElementByld("results").innerHTML =
+        window.document.getElementByld("results").innerHTML =
         "<div class='result-card'><pre>" + result + "</pre></div>";
 
     } catch (error) {
 
-        document.body.innerHTML =
+        window.document.body.innerHTML =
             "<h2>Connection Error</h2><pre>" +
             error.message +
             "</pre>";
