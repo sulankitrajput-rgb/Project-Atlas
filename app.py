@@ -457,6 +457,217 @@ pre {{
 """
     return final_answer
 
+# =========================
+# STANDALONE PROJECT ATLAS
+# =========================
+
+@app.route("/", methods=["GET"])
+def home():
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project Atlas - AI Comparison</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .header {
+            background: #1769ff;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            font-size: 17px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            font-size: 17px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: #1769ff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0d55d9;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 25px;
+            font-size: 18px;
+        }
+
+        #result {
+            margin-top: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .title {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            color: #777;
+            margin: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>PROJECT ATLAS</h1>
+        <p>AI COMPARISON</p>
+    </div>
+
+    <div class="container">
+
+        <textarea id="question"
+            placeholder="Ask Project Atlas anything..."></textarea>
+
+        <button onclick="askAtlas()">
+            COMPARE AI MODELS
+        </button>
+
+        <div id="loading">
+             Comparing AI models...
+        </div>
+
+        <div id="result"></div>
+
+    </div>
+
+    <div class="footer">
+        Project Atlas • AI Comparison
+    </div>
+
+<script>
+
+async function askAtlas() {
+
+    const question =
+        document.getElementById("question").value.trim();
+
+    const result =
+        document.getElementById("result");
+
+    const loading =
+        document.getElementById("loading");
+
+    if (!question) {
+        alert("Please enter a question.");
+        return;
+    }
+
+    loading.style.display = "block";
+    result.innerHTML = "";
+
+    try {
+
+        const response = await fetch("/compare", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/html"
+            },
+
+            body: JSON.stringify({
+                question: question,
+                image: ""
+            })
+        });
+
+        const data = await response.text();
+
+        if (!response.ok) {
+            result.innerHTML =
+                "<div class='card'>" +
+                "<b>Error:</b><br>" +
+                data +
+                "</div>";
+        } else {
+            result.innerHTML = data;
+        }
+
+    } catch (error) {
+
+        result.innerHTML =
+            "<div class='card'>" +
+            "<b>Connection error:</b><br>" +
+            error.message +
+            "</div>";
+
+    } finally {
+
+        loading.style.display = "none";
+    }
+}
+
+</script>
+
+</body>
+</html>
+"""
+
 # ==========================
 # TEST ROUTE
 # ==========================
