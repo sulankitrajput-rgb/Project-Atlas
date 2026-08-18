@@ -106,6 +106,22 @@ button {
     cursor: pointer;
 }
 
+.result-card {
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.result-card pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
 button:hover {
     background: #1256d8;
 }
@@ -306,9 +322,8 @@ async function askAtlas() {
             return;
         }
 
-        document.open();
-        document.write(result);
-        document.close();
+        document.getElementByld("results").innerHTML =
+        "<div class='result-card'><pre>" + result + "</pre></div>";
 
     } catch (error) {
 
