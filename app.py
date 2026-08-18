@@ -284,9 +284,13 @@ def compare():
     print("Content-Type:", request.content_type)
     print("Raw:", request.get_data(as_text=True))
 
-    return jsonify({
-        "answer": "SUCCESS! Project Atlas received the request."
-    })
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"error": "No valid JSON recevied"}), 400
+
+    question = data.get("question", "")
+    image = data.get("image","")
 
     try:
         chatgpt = ask_openai(question)
