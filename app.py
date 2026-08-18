@@ -265,6 +265,8 @@ button:hover {
     <div id="loading">
          Comparing AI models...
     </div>
+    
+    <div id="result"></div>
 
 </div>
 
