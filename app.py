@@ -322,7 +322,7 @@ async function askAtlas() {
             return;
         }
 
-        document.getElementByld("results").innerHTML =
+        window.document.getElementByld("results").innerHTML =
         "<div class='result-card'><pre>" + result + "</pre></div>";
 
     } catch (error) {
