@@ -27,9 +27,153 @@ print("OpenAI    :", "Loaded" if OPENAI_KEY else "Missing")
 # ==========================
 # HOME PAGE
 # ==========================
-@app.route("/")
-def home():
-    return "Project Atlas is running!"
+@app.route("/atlas", metodsa=[GET])
+def atlas():
+        return """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project Atlas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .header {
+            background: #1769ff;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            font-size: 17px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px;
+            box-sizing: border-box;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 16px;
+            background: #1769ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>PROJECT ATLAS</h1>
+    <p>AI COMPARISON</p>
+</div>
+
+<div class="container">
+
+    <textarea id="question"
+        placeholder="Ask Project Atlas anything..."></textarea>
+
+    <button onclick="askAtlas()">
+        COMPARE AI MODELS
+    </button>
+
+    <div id="loading">
+         Comparing AI models...
+    </div>
+
+</div>
+
+<script>
+
+async function askAtlas() {
+
+    const question =
+        document.getElementById("question").value.trim();
+
+    if (!question) {
+        alert("Please enter a question.");
+        return;
+    }
+
+    document.getElementById("loading").style.display = "block";
+
+    try {
+
+        const response = await fetch("/compare", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                question: question,
+                image: ""
+            })
+        });
+
+        const result = await response.text();
+
+        if (!response.ok) {
+            document.body.innerHTML =
+                "<h2>Error</h2><pre>" + result + "</pre>";
+            return;
+        }
+
+        document.open();
+        document.write(result);
+        document.close();
+
+    } catch (error) {
+
+        document.body.innerHTML =
+            "<h2>Connection Error</h2><pre>" +
+            error.message +
+            "</pre>";
+
+    }
+}
+
+</script>
+
+</body>
+</html>
+"""
 
 
 # ==========================
