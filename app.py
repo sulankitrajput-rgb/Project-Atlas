@@ -291,14 +291,14 @@ button:hover {
 async function askAtlas() {
 
     const question =
-        document.getElementById("question").value.trim();
+        window.document.getElementById("question").value.trim();
 
     if (!question) {
         alert("Please enter a question.");
         return;
     }
 
-    document.getElementById("loading").style.display = "block";
+    window.document.getElementById("loading").style.display = "block";
 
     try {
 
