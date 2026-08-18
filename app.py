@@ -39,11 +39,158 @@ def atlas():
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-        }
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+.header {
+    background: linear-gradient(135deg, #1769ff, #4f46e5);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 34px;
+    letter-spacing: 1px;
+}
+
+.header p {
+    margin: 8px 0 0;
+    font-size: 17px;
+    opacity: 0.95;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 18px;
+    font-size: 17px;
+    border: 2px solid #d1d5db;
+    border-radius: 14px;
+    resize: vertical;
+    outline: none;
+    background: white;
+}
+
+textarea:focus {
+    border-color: #1769ff;
+    box-shadow: 0 0 0 3px rgba(23,105,255,0.12);
+}
+
+button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 16px;
+    background: #1769ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1256d8;
+}
+
+#loading {
+    display: none;
+    text-align: center;
+    margin: 25px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card {
+    background: white;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-left: 6px solid #1769ff;
+    overflow-x: auto;
+}
+
+.card .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.card pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.card-chatgpt {
+    border-left-color: #10a37f;
+}
+
+.card-gemini {
+    border-left-color: #4285f4;
+}
+
+.card-groq {
+    border-left-color: #f97316;
+}
+
+.card-claude {
+    border-left-color: #d97706;
+}
+
+.card-deepseek {
+    border-left-color: #2563eb;
+}
+
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 27px;
+    }
+
+    .header p {
+        font-size: 15px;
+    }
+
+    .container {
+        margin: 20px auto;
+        padding: 0 12px;
+    }
+
+    textarea {
+        min-height: 120px;
+        font-size: 16px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .card pre {
+        font-size: 15px;
+    }
+}
+</style>
 
         .header {
             background: #1769ff;
