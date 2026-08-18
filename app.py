@@ -291,14 +291,14 @@ button:hover {
 async function askAtlas() {
 
     const question =
-        window.document.getElementById("question").value.trim();
+        globalThis.document.getElementById("question").value.trim();
 
     if (!question) {
         alert("Please enter a question.");
         return;
     }
 
-    window.document.getElementById("loading").style.display = "block";
+    globalThis.document.getElementById("loading").style.display = "block";
 
     try {
 
@@ -322,7 +322,7 @@ async function askAtlas() {
             return;
         }
 
-        window.document.getElementByld("results").innerHTML =
+        globalThis.document.getElementByld("results").innerHTML =
         "<div class='result-card'><pre>" + result + "</pre></div>";
 
     } catch (error) {
