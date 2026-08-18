@@ -304,7 +304,7 @@ button:active {
 async function askAtlas() {
 
     const question =
-        window.document.getElementById("question").value.trim();
+        window.document.getElementByld("question").value.trim();
 
     if (!question) {
         alert("Please enter a question.");
