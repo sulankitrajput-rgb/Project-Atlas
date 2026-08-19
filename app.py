@@ -666,7 +666,6 @@ h1 {
 </html>
 """
 final_answer = final_answer.replace("QUESTION_PLACEHOLDER", question)
-
 return final_answer
 
 # =========================
