@@ -587,8 +587,8 @@ final_answer = f"""
 
 </div>
 """
-return final_answer
 
+return final_answer
 
 def get_text(response):
     if not isinstance(response, dict):
