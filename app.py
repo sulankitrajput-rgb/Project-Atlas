@@ -586,7 +586,7 @@ final_answer = f"""
     </div>
 
 </div>
-""
+"""
 return final_answer
 
 
@@ -677,7 +677,7 @@ return final_answer
 
 @app.route("/", methods=["GET"])
 def home():
-    return """
+    return"""
 <!DOCTYPE html>
 <html>
 <head>
