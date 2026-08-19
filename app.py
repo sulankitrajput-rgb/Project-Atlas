@@ -616,84 +616,60 @@ def get_text(response):
 
     else:
         return "❌ " + error
-        
-final_answer = f"""
+
+final_answer = """
 <html>
 <head>
-       <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background: #f3f6fb;
-                margin: 20px;
-            }}
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f6fb;
+    margin: 20px;
+}
 
-            h1 {{
-                text-align: center;
-                color: #1f4e8c;
-            }}
+h1 {
+    text-align: center;
+    color: #1f4ed8;
+}
 
-            .question {{
-                background: white;
-                padding: 15px;
-                border-radius: 10px;
-                margin-bottom: 20px;
-            }}
+.question {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,.1);
+}
 
-            .card {{
-                background: white;
-                margin: 15px 0;
-                padding: 15px;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-            }}
+.card {
+    background: white;
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
 
-            .title {{
-                font-size: 22px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }}
-        </style>
-    </head>
+.title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
 
-    <body>
+<h1>PROJECT ATLAS</h1>
 
-        <h1>PROJECT ATLAS</h1>
+<div class="question">
+    <b>Question:</b><br>
+    QUESTION_PLACEHOLDER
+</div>
 
-        <div class="question">
-            <b>Question:</b><br>
-            """ + question + """
-        </div>
+</body>
+</html>
+"""
+final_answer = final_answer.replace("QUESTION_PLACEHOLDER", question)
 
-        <div class="card">
-            <div class="title">ChatGPT</div>
-            """ + get_text(chatgpt) + """
-        </div>
-
-        <div class="card">
-            <div class="title">Gemini</div>
-            """ + get_text(gemini) + """
-        </div>
-
-        <div class="card">
-            <div class="title">Groq</div>
-            """ + get_text(groq) + """
-        </div>
-
-        <div class="card">
-            <div class="title">Claude</div>
-            """ + get_text(claude) + """
-        </div>
-
-        <div class="card">
-            <div class="title">DeepSeek</div>
-            """ + get_text(deepseek) + """
-        </div>
-
-    </body>
-    </html>
-    """
-
-    return final_answer
+return final_answer
 
 # =========================
 # STANDALONE PROJECT ATLAS
