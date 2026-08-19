@@ -616,42 +616,42 @@ def get_text(response):
 
     else:
         return "❌ " + error
-
-            final_answer = """
+        
+        final_answer = f"""
     <html>
     <head>
-        <style>
-            body {
+       <style>
+            body {{
                 font-family: Arial, sans-serif;
                 background: #f3f6fb;
                 margin: 20px;
-            }
+            }}
 
-            h1 {
+            h1 {{
                 text-align: center;
                 color: #1f4e8c;
-            }
+            }}
 
-            .question {
+            .question {{
                 background: white;
                 padding: 15px;
                 border-radius: 10px;
                 margin-bottom: 20px;
-            }
+            }}
 
-            .card {
+            .card {{
                 background: white;
                 margin: 15px 0;
                 padding: 15px;
                 border-radius: 12px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-            }
+            }}
 
-            .title {
+            .title {{
                 font-size: 22px;
                 font-weight: bold;
                 margin-bottom: 10px;
-            }
+            }}
         </style>
     </head>
 
