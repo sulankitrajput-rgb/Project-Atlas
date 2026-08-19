@@ -617,9 +617,9 @@ def get_text(response):
     else:
         return "❌ " + error
         
-        final_answer = f"""
-    <html>
-    <head>
+final_answer = f"""
+<html>
+<head>
        <style>
             body {{
                 font-family: Arial, sans-serif;
