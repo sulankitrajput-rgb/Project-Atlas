@@ -102,177 +102,135 @@ async function askAtlas() {
 </script>
 
 <style>
+
 * {
     box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f7fb;
-    color: #222;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #eef4ff, #f8fbff);
+    color: #172033;
+    min-height: 100vh;
 }
 
-/* HEADER */
-header {
-    background: linear-gradient(135deg, #1769ff, #0d47a1);
-    color: white;
-    text-align: center;
-    padding: 28px 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-header h1 {
-    margin: 0;
-    font-size: 32px;
-    letter-spacing: 1px;
-}
-
-header p {
-    margin: 8px 0 0;
-    font-size: 15px;
-    opacity: 0.9;
-}
-
-/* MAIN CONTAINER */
 .container {
     width: 90%;
     max-width: 1000px;
-    margin: 30px auto;
+    margin: 50px auto;
 }
 
-/* QUESTION BOX */
+h1 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 8px;
+    color: #172554;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 16px;
+    margin-bottom: 35px;
+}
+
 textarea {
     width: 100%;
-    min-height: 130px;
-    padding: 16px;
-    font-size: 16px;
-    border: 2px solid #d6dce5;
-    border-radius: 12px;
+    min-height: 140px;
+    padding: 20px;
+    border: 2px solid #dbe4f0;
+    border-radius: 16px;
+    background: white;
+    font-size: 17px;
     resize: vertical;
     outline: none;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
 }
 
 textarea:focus {
-    border-color: #1769ff;
-    box-shadow: 0 0 0 3px rgba(23,105,255,0.12);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
-/* BUTTON */
 button {
     width: 100%;
-    margin-top: 15px;
-    padding: 15px;
-    background: #1769ff;
-    color: white;
+    margin-top: 18px;
+    padding: 17px;
     border: none;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    color: white;
+    font-size: 17px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-    background: #0d47a1;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
 }
 
 button:active {
     transform: translateY(0);
 }
 
-/* LOADING */
 #loading {
     display: none;
     text-align: center;
     margin: 25px 0;
-    font-size: 18px;
+    color: #475569;
     font-weight: bold;
-    color: #1769ff;
 }
 
-/* RESULTS */
-#results {
-    margin-top: 25px;
+#result {
+    margin-top: 30px;
 }
 
-/* AI RESULT CARD */
-.card {
+.result-card {
     background: white;
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    border-left: 6px solid #1769ff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #2563eb;
     overflow-x: auto;
 }
 
-.card-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
-
-/* RESULT TEXT */
-.card pre {
+.result-card pre {
     white-space: pre-wrap;
     word-wrap: break-word;
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
-    line-height: 1.6;
+    line-height: 1.7;
     margin: 0;
 }
 
-/* DIFFERENT AI COLORS */
-.card-chatgpt {
-    border-left-color: #10a37f;
-}
-
-.card-gemini {
-    border-left-color: #4285f4;
-}
-
-.card-groq {
-    border-left-color: #f97316;
-}
-
-.card-claude {
-    border-left-color: #d97706;
-}
-
-.card-deepseek {
-    border-left-color: #2563eb;
-}
-
-/* MOBILE */
 @media (max-width: 600px) {
-
-    header h1 {
-        font-size: 25px;
-    }
 
     .container {
         width: 94%;
-        margin: 20px auto;
+        margin: 30px auto;
+    }
+
+    h1 {
+        font-size: 30px;
     }
 
     textarea {
-        min-height: 110px;
+        min-height: 120px;
         font-size: 15px;
     }
 
     button {
         font-size: 15px;
     }
-
-    .card {
-        padding: 15px;
-    }
 }
-    </style>
+
+</style>
 </head>
 
 <body>
