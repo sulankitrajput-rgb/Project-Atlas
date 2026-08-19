@@ -617,7 +617,7 @@ def get_text(response):
     else:
         return "❌ " + error
 
-        final_answer = """
+            final_answer = """
     <html>
     <head>
         <style>
@@ -694,6 +694,7 @@ def get_text(response):
     """
 
     return final_answer
+
 # =========================
 # STANDALONE PROJECT ATLAS
 # =========================
