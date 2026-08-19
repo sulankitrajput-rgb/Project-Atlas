@@ -126,6 +126,7 @@ h1 {
     text-align: center;
     font-size: 42px;
     margin-bottom: 8px;
+    
     color: #172554;
     letter-spacing: 2px;
 }
@@ -619,57 +620,138 @@ def get_text(response):
 
     return str(response)
 
-final_answer = """
+def clean_result(result):
+    """Convert API response into clean text for display."""
+
+    if isinstance(result, dict):
+
+        # Normal successful response
+        if "answer" in result:
+            return str(result["answer"])
+
+        # API error response
+        if "error" in result:
+            error = result["error"]
+
+            if isinstance(error, dict):
+                error = error.get("message", str(error))
+
+            return "⚠️ " + str(error)
+
+    return str(result)
+
+
+chatgpt_text = clean_result(chatgpt)
+gemini_text = clean_result(gemini)
+groq_text = clean_result(groq)
+claude_text = clean_result(claude)
+deepseek_text = clean_result(deepseek)
+
+
+final_answer = f"""
 <html>
 <head>
+
 <style>
-body {
+
+body {{
     font-family: Arial, sans-serif;
     background: #f3f6fb;
     margin: 20px;
-}
+}}
 
-h1 {
+h1 {{
     text-align: center;
-    color: #1f4ed8;
-}
+    color: #1f3c88;
+}}
 
-.question {
+.compare-grid {{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+}}
+
+.ai-card {{
     background: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,.1);
-}
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border: 1px solid #e1e5eb;
+}}
 
-.card {
-    background: white;
-    margin: 15px 0;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.12);
-}
+.ai-card h2 {{
+    margin-top: 0;
+    color: #1f3c88;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}}
 
-.title {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+.ai-answer {{
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: #333;
+    font-size: 15px;
+}}
+
 </style>
+
 </head>
+
 <body>
 
-<h1>PROJECT ATLAS</h1>
+<h1> AI Model Comparison</h1>
 
-<div class="question">
-    <b>Question:</b><br>
-    QUESTION_PLACEHOLDER
+<div class="compare-grid">
+
+    <div class="ai-card">
+        <h2> ChatGPT</h2>
+        <div class="ai-answer">
+            {chatgpt_text}
+        </div>
+    </div>
+
+
+    <div class="ai-card">
+        <h2> Gemini</h2>
+        <div class="ai-answer">
+            {gemini_text}
+        </div>
+    </div>
+
+
+    <div class="ai-card">
+        <h2> Groq</h2>
+        <div class="ai-answer">
+            {groq_text}
+        </div>
+    </div>
+
+
+    <div class="ai-card">
+        <h2> Claude</h2>
+        <div class="ai-answer">
+            {claude_text}
+        </div>
+    </div>
+
+
+    <div class="ai-card">
+        <h2> DeepSeek</h2>
+        <div class="ai-answer">
+            {deepseek_text}
+        </div>
+    </div>
+
 </div>
 
 </body>
 </html>
 """
+
 final_answer = final_answer.replace("QUESTION_PLACEHOLDER", question)
+
+return final_answer
 
 # =========================
 # STANDALONE PROJECT ATLAS
