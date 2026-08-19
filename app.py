@@ -586,8 +586,7 @@ final_answer = f"""
     </div>
 
 </div>
-"""
-
+""
 return final_answer
 
 
