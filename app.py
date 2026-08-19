@@ -602,7 +602,6 @@ body {{
 # ============================================================
 
 @app.route("/", methods=["GET"])
-@app.route("/atlas", methods=["GET"])
 def home():
 
     return """
@@ -612,220 +611,414 @@ def home():
 
 <head>
 
-<title>Project Atlas</title>
+<title>Project Atlas - AI Comparison</title>
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1">
+content="width=device-width, initial-scale=1">
 
 <style>
 
-* {{
-    box-sizing: border-box;
-}}
-
-body {{
+body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: #f4f7fb;
-}}
+}
 
-.header {{
+.header {
     background: #1769ff;
     color: white;
-    padding: 30px 20px;
+    padding: 30px;
     text-align: center;
-}}
+}
 
-.header h1 {{
+.header h1 {
     margin: 0;
     font-size: 34px;
-}}
+}
 
-.header p {{
-    margin-top: 8px;
-}}
+.header p {
+    margin: 10px 0 0;
+    font-size: 18px;
+}
 
-.container {{
-    width: 92%;
-    max-width: 1000px;
+.container {
+    max-width: 900px;
     margin: 30px auto;
-}}
+    padding: 20px;
+}
 
-textarea {{
+/* QUESTION BOX */
+
+textarea {
     width: 100%;
-    min-height: 140px;
-    padding: 18px;
+    height: 120px;
+    padding: 15px;
     font-size: 17px;
-    border: 1px solid #ccd5e1;
+    border: 1px solid #ccc;
     border-radius: 12px;
+    box-sizing: border-box;
     resize: vertical;
-}}
+}
 
-button {{
+/* STYLE AREA */
+
+.style-label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+select {
     width: 100%;
-    margin-top: 15px;
-    padding: 17px;
-    background: #1769ff;
-    color: white;
-    border: none;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
     border-radius: 10px;
+    background: white;
+    box-sizing: border-box;
+}
+
+/* BUTTON */
+
+button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 15px;
     font-size: 18px;
     font-weight: bold;
+    color: white;
+    background: #1769ff;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
-}}
+}
 
-button:hover {{
+button:hover {
     background: #0d55d9;
-}}
+}
 
-#loading {{
+/* LOADING */
+
+#loading {
     display: none;
     text-align: center;
     margin: 25px;
+    font-size: 18px;
     font-weight: bold;
-}}
+}
 
-#result {{
+/* RESULTS */
+
+#result {
     margin-top: 30px;
-}}
+}
+
+.compare-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.ai-card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    border-left: 5px solid #1769ff;
+}
+
+.ai-card h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.ai-answer {
+    overflow-x: auto;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.footer {
+    text-align: center;
+    color: #777;
+    margin: 30px;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 94%;
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    textarea {
+        height: 120px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+
+}
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="header">
 
-<h1>PROJECT ATLAS</h1>
+    <h1>PROJECT ATLAS</h1>
 
-<p>AI COMPARISON</p>
+    <p>AI COMPARISON</p>
 
 </div>
 
 
 <div class="container">
 
-<textarea
-id="question"
-placeholder="Ask Project Atlas anything..."
-></textarea>
+
+    <!-- QUESTION BOX -->
+
+    <textarea
+        id="question"
+        placeholder="Ask Project Atlas anything..."
+    ></textarea>
 
 
-<button onclick="askAtlas()">
+    <!-- STYLE OPTION -->
 
-COMPARE AI MODELS
+    <label class="style-label" for="style">
+        Answer Style:
+    </label>
 
-</button>
+
+    <select id="style">
+
+        <option value="balanced">
+            Balanced
+        </option>
+
+        <option value="simple">
+            Simple
+        </option>
+
+        <option value="detailed">
+            Detailed
+        </option>
+
+        <option value="creative">
+            Creative
+        </option>
+
+    </select>
 
 
-<div id="loading">
+    <!-- COMPARE BUTTON -->
 
-Comparing AI models...
+    <button onclick="askAtlas()">
+
+        COMPARE AI MODELS
+
+    </button>
+
+
+    <!-- LOADING MESSAGE -->
+
+    <div id="loading">
+
+        Comparing AI models...
+
+    </div>
+
+
+    <!-- ANSWERS WILL APPEAR HERE -->
+
+    <div id="result"></div>
+
 
 </div>
 
 
-<div id="result"></div>
+<div class="footer">
+
+    Project Atlas • AI Comparison
 
 </div>
 
 
 <script>
 
-async function askAtlas() {{
+
+async function askAtlas() {
+
+
+    // Get question
 
     const question =
-        document
-        .getElementById("question")
+        document.getElementById("question")
         .value
         .trim();
 
+
+    // Get selected style
+
+    const style =
+        document.getElementById("style")
+        .value;
+
+
+    // Get result area
+
     const result =
-        document
-        .getElementById("result");
+        document.getElementById("result");
+
+
+    // Get loading message
 
     const loading =
-        document
-        .getElementById("loading");
+        document.getElementById("loading");
 
 
-    if (!question) {{
+    // Check question
+
+    if (!question) {
 
         alert("Please enter a question.");
 
         return;
 
-    }}
+    }
 
+
+    // Show loading
 
     loading.style.display = "block";
 
     result.innerHTML = "";
 
 
-    try {{
+    try {
 
-        const response =
-            await fetch(
-                "/compare",
-                {{
-                    method: "POST",
 
-                    headers: {{
-                        "Content-Type":
-                            "application/json"
-                    }},
+        // Send request to Python
 
-                    body: JSON.stringify({{
-                        question: question,
-                        image: ""
-                    }})
-                }}
-            );
+        const response = await fetch(
+            "/compare",
+            {
 
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "text/html"
+
+                },
+
+                body: JSON.stringify({
+
+                    question: question,
+
+                    image: "",
+
+                    style: style
+
+                })
+
+            }
+        );
+
+
+        // Get response
 
         const data =
             await response.text();
 
 
-        if (!response.ok) {{
+        // Check for error
+
+        if (!response.ok) {
 
             result.innerHTML =
-                "<div class='question-box'>" +
+                "<div class='card'>" +
                 "<b>Error:</b><br>" +
                 data +
                 "</div>";
 
-        }} else {{
+        }
+
+        else {
+
+            // Show answers
 
             result.innerHTML = data;
 
-        }}
+        }
 
-    }} catch (error) {{
+
+    }
+
+    catch (error) {
+
 
         result.innerHTML =
-            "<div class='question-box'>" +
+            "<div class='card'>" +
             "<b>Connection error:</b><br>" +
             error.message +
             "</div>";
 
-    }} finally {{
+    }
+
+
+    finally {
+
+        // Hide loading
 
         loading.style.display = "none";
 
-    }}
+    }
 
-}}
+}
+
 
 </script>
+
 
 </body>
 
 </html>
 """
-
 
 # ============================================================
 # TEST
