@@ -624,7 +624,7 @@ def get_text(response):
 body {{
     font-family: Arial, sans-serif;
     background:#f3f6fb;
-    margin:20px;
+    margin 20px;
 }}
 
 h1 {{
