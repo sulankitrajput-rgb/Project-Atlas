@@ -547,29 +547,49 @@ def compare():
     except Exception as e:
         deepseek = {"error": str(e)}
 
-    final_answer = f"""
-PROJECT ATLAS
-AI COMPARISON
+final_answer = f"""
+<div class="compare-grid">
 
-Question:
-{question}
+    <div class="ai-card">
+        <h2> ChatGPT</h2>
+        <div class="ai-answer">
+            {get_text(chatgpt)}
+        </div>
+    </div>
 
-ChatGPT
-{get_text(chatgpt)}
+    <div class="ai-card">
+        <h2> Gemini</h2>
+        <div class="ai-answer">
+            {get_text(gemini)}
+        </div>
+    </div>
 
-Gemini
-{get_text(gemini)}
+    <div class="ai-card">
+        <h2> Groq</h2>
+        <div class="ai-answer">
+            {get_text(groq)}
+        </div>
+    </div>
 
-Groq
-{get_text(groq)}
+    <div class="ai-card">
+        <h2> Claude</h2>
+        <div class="ai-answer">
+            {get_text(claude)}
+        </div>
+    </div>
 
-Claude
-{get_text(claude)}
+    <div class="ai-card">
+        <h2> DeepSeek</h2>
+        <div class="ai-answer">
+            {get_text(deepseek)}
+        </div>
+    </div>
 
-DeepSeek
-{get_text(deepseek)}
+</div>
 """
-    return final_answer
+
+return final_answer
+
 
 def get_text(response):
     if not isinstance(response, dict):
