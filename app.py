@@ -514,81 +514,101 @@ def compare():
     print("===== COMPARE TEST =====")
     print("Content-Type:", request.content_type)
     print("Raw:", request.get_data(as_text=True))
-
-    data = request.get_json(silent=True)
+        
+        data = request.get_json(silent=True)
 
     if not data:
-        return jsonify({"error": "No valid JSON recevied"}), 400
+        return jsonify({"error": "No valid JSON received"}), 400
 
     question = data.get("question", "")
-    image = data.get("image","")
+    image = data.get("image", "")
 
+    # -----------------------------
+    # ChatGPT
+    # -----------------------------
     try:
         chatgpt = ask_openai(question)
     except Exception as e:
         chatgpt = {"error": str(e)}
 
+    # -----------------------------
+    # Gemini
+    # -----------------------------
     try:
         gemini = ask_gemini(question, image)
     except Exception as e:
-        gemini = {"error": str(e)} 
+        gemini = {"error": str(e)}
 
+    # -----------------------------
+    # Groq
+    # -----------------------------
     try:
         groq = ask_groq(question)
     except Exception as e:
         groq = {"error": str(e)}
 
+    # -----------------------------
+    # Claude
+    # -----------------------------
     try:
         claude = ask_claude(question)
     except Exception as e:
         claude = {"error": str(e)}
 
+    # -----------------------------
+    # DeepSeek
+    # -----------------------------
     try:
         deepseek = ask_deepseek(question)
     except Exception as e:
         deepseek = {"error": str(e)}
 
-final_answer = f"""
-<div class="compare-grid">
+    # -----------------------------
+    # Build comparison page
+    # IMPORTANT: This is INSIDE the function
+    # -----------------------------
+    final_answer = f"""
+    <div class="compare-grid">
 
-    <div class="ai-card">
-        <h2> ChatGPT</h2>
-        <div class="ai-answer">
-            {str(chatgpt)}
+        <div class="ai-card">
+            <h2>ChatGPT</h2>
+            <div class="ai-answer">
+                {str(chatgpt)}
+            </div>
         </div>
-    </div>
 
-    <div class="ai-card">
-        <h2> Gemini</h2>
-        <div class="ai-answer">
-            {str(gemini)}
+        <div class="ai-card">
+            <h2>Gemini</h2>
+            <div class="ai-answer">
+                {str(gemini)}
+            </div>
         </div>
-    </div>
 
-    <div class="ai-card">
-        <h2> Groq</h2>
-        <div class="ai-answer">
-            {str(groq)}
+        <div class="ai-card">
+            <h2>Groq</h2>
+            <div class="ai-answer">
+                {str(groq)}
+            </div>
         </div>
-    </div>
 
-    <div class="ai-card">
-        <h2> Claude</h2>
-        <div class="ai-answer">
-            {str(claude)}
+        <div class="ai-card">
+            <h2>Claude</h2>
+            <div class="ai-answer">
+                {str(claude)}
+            </div>
         </div>
-    </div>
 
-    <div class="ai-card">
-        <h2> DeepSeek</h2>
-        <div class="ai-answer">
-            {str(deepseek)}
+        <div class="ai-card">
+            <h2>DeepSeek</h2>
+            <div class="ai-answer">
+                {str(deepseek)}
+            </div>
         </div>
+
     </div>
+    """
 
-</div>
-"""
-
+    return final_answer
 def get_text(response):
     if not isinstance(response, dict):
         return str(response)
