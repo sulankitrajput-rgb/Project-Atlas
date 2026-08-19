@@ -595,15 +595,15 @@ def get_text(response):
     # Normal answer
     if "answer" in response:
         return response["answer"]
-        
+
     # Error handling
     if "error" in response:
         error = response["error"]
 
-    if isinstance(error, dict):
-        error = str(error)
+        if isinstance(error, dict):
+            error = str(error)
 
-    if "credit balance is too low" in error.lower():
+        if "credit balance is too low" in error.lower():
         return "❌ API balance exhausted. Please recharge Claude."
 
     elif "insufficient balance" in error.lower():
@@ -614,6 +614,8 @@ def get_text(response):
 
     else:
         return "❌ " + error
+
+    return str(response)
 
 final_answer = """
 <html>
