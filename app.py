@@ -553,35 +553,35 @@ final_answer = f"""
     <div class="ai-card">
         <h2> ChatGPT</h2>
         <div class="ai-answer">
-            {get_text(chatgpt)}
+            {str(chatgpt)}
         </div>
     </div>
 
     <div class="ai-card">
         <h2> Gemini</h2>
         <div class="ai-answer">
-            {get_text(gemini)}
+            {str(gemini)}
         </div>
     </div>
 
     <div class="ai-card">
         <h2> Groq</h2>
         <div class="ai-answer">
-            {get_text(groq)}
+            {str(groq)}
         </div>
     </div>
 
     <div class="ai-card">
         <h2> Claude</h2>
         <div class="ai-answer">
-            {get_text(claude)}
+            {str(claude)}
         </div>
     </div>
 
     <div class="ai-card">
         <h2> DeepSeek</h2>
         <div class="ai-answer">
-            {get_text(deepseek)}
+            {str(deepseek)}
         </div>
     </div>
 
