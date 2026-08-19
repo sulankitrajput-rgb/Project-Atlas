@@ -604,7 +604,7 @@ def get_text(response):
             error = str(error)
 
         if "credit balance is too low" in error.lower():
-        return "❌ API balance exhausted. Please recharge Claude."
+                return "❌ API balance exhausted. Please recharge Claude."
 
     elif "insufficient balance" in error.lower():
         return "❌ API balance exhausted."
