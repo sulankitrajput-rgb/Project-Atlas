@@ -749,8 +749,6 @@ h1 {{
 
 final_answer = final_answer.replace("QUESTION_PLACEHOLDER", question)
 
-return final_answer
-
 # =========================
 # STANDALONE PROJECT ATLAS
 # =========================
