@@ -513,7 +513,7 @@ def ask():
 def compare():
     print("===== COMPARE TEST =====")
     print("Content-Type:", request.content_type)
-    print("Raw:", request.get_data(as_text=True):
+    print("Raw:", request.get_data(as_text=True)
         
     data = request.get_json(silent=True)
 
