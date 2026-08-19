@@ -1,715 +1,532 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 import requests
 import os
 import base64
+from html import escape
 
 app = Flask(__name__)
 CORS(app)
 
-# ==========================
-# API KEYS
-# ==========================
+# ============================================================
+# PROJECT ATLAS - API KEYS
+# ============================================================
+
 GROQ_KEY = os.getenv("GROQ_KEY")
 GEMINI_KEY = os.getenv("GEMINI_KEY")
 DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 OPENAI_KEY = os.getenv("OPENAI_KEY")
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_KEY")
 
-print("===== PROJECT ATLAS =====")
-print("Groq      :", "Loaded" if GROQ_KEY else "Missing")
-print("Gemini    :", "Loaded" if GEMINI_KEY else "Missing")
-print("DeepSeek  :", "Loaded" if DEEPSEEK_KEY else "Missing")
-print("OpenAI    :", "Loaded" if OPENAI_KEY else "Missing")
+
+# ============================================================
+# HELPER
+# ============================================================
+
+def get_text(response):
+    if response is None:
+        return "No response."
+
+    if not isinstance(response, dict):
+        return str(response)
+
+    if "answer" in response:
+        return str(response["answer"])
+
+    if "error" in response:
+        error = response["error"]
+
+        if isinstance(error, dict):
+            error = error.get("message", str(error))
+
+        return "❌ " + str(error)
+
+    return str(response)
 
 
-# ==========================
-# HOME PAGE
-# ==========================
-@app.route("/", methods=["GET"])
-@app.route("/atlas", 
-methods=["GET"])
-def atlas():
-        return """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Project Atlas</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <script>
-
-async function askAtlas() {
-
-    const question = window.document.getElementById("question").value.trim();
-    const result = window.document.getElementById("result");
-    const loading = window.document.getElementById("loading");
-
-    if (!question) {
-        alert("Please enter a question.");
-        return;
-    }
-
-    loading.style.display = "block";
-    result.innerHTML = "";
-
-    try {
-
-        const response = await fetch("/compare", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/html"
-            },
-            body: JSON.stringify({
-                question: question,
-                image: ""
-            })
-        });
-
-        const data = await response.text();
-
-        if (!response.ok) {
-
-            result.innerHTML =
-                "<div class='card'>" +
-                "<b>Error:</b><br>" +
-                data +
-                "</div>";
-
-        } else {
-
-            result.innerHTML = data;
-
-        }
-
-    } catch (error) {
-
-        result.innerHTML =
-            "<div class='card'>" +
-            "<b>Connection Error:</b><br>" +
-            error.message +
-            "</div>";
-
-    } finally {
-
-        loading.style.display = "none";
-
-    }
-}
-
-</script>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: linear-gradient(135deg, #eef4ff, #f8fbff);
-    color: #172033;
-    min-height: 100vh;
-}
-
-.container {
-    width: 90%;
-    max-width: 1000px;
-    margin: 50px auto;
-}
-
-h1 {
-    text-align: center;
-    font-size: 42px;
-    margin-bottom: 8px;
-    
-    color: #172554;
-    letter-spacing: 2px;
-}
-
-.subtitle {
-    text-align: center;
-    color: #64748b;
-    font-size: 16px;
-    margin-bottom: 35px;
-}
-
-textarea {
-    width: 100%;
-    min-height: 140px;
-    padding: 20px;
-    border: 2px solid #dbe4f0;
-    border-radius: 16px;
-    background: white;
-    font-size: 17px;
-    resize: vertical;
-    outline: none;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-}
-
-textarea:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-}
-
-button {
-    width: 100%;
-    margin-top: 18px;
-    padding: 17px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #2563eb, #7c3aed);
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
-}
-
-button:active {
-    transform: translateY(0);
-}
-
-#loading {
-    display: none;
-    text-align: center;
-    margin: 25px 0;
-    color: #475569;
-    font-weight: bold;
-}
-
-#result {
-    margin-top: 30px;
-}
-
-.result-card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    border-left: 5px solid #2563eb;
-    overflow-x: auto;
-}
-
-.result-card pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    margin: 0;
-}
-
-@media (max-width: 600px) {
-
-    .container {
-        width: 94%;
-        margin: 30px auto;
-    }
-
-    h1 {
-        font-size: 30px;
-    }
-
-    textarea {
-        min-height: 120px;
-        font-size: 15px;
-    }
-
-    button {
-        font-size: 15px;
-    }
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="header">
-    <h1>PROJECT ATLAS</h1>
-    <p>AI COMPARISON</p>
-</div>
-
-<div class="container">
-
-    <textarea id="question"
-        placeholder="Ask Project Atlas anything..."></textarea>
-
-    <button onclick="askAtlas()">
-        COMPARE AI MODELS
-    </button>
-
-    <div id="loading">
-         Comparing AI models...
-    </div>
-    
-    <div id="result"></div>
-
-</div>
-
-</body>
-</html>
-"""
-
-
-# ==========================
+# ============================================================
 # GROQ
-# ==========================
+# ============================================================
+
 def ask_groq(question):
-    url = "https://api.groq.com/openai/v1/chat/completions"
 
-    headers = {
-        "Authorization": f"Bearer {GROQ_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    body = {
-        "model": "llama-3.1-8b-instant",
-        "messages": [
-            {
-                "role": "user",
-                "content": question
-            }
-        ]
-    }
-
-    response = requests.post(url, headers=headers, json=body)
-
-    if response.status_code != 200:
-        return {"error": response.text}
-
-    result = response.json()
-    return {"answer": result["choices"][0]["message"]["content"]}
-
-
-# ==========================
-# GEMINI (UPDATED)
-# ==========================
-def ask_gemini(question, image=""):
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent"
-
-    headers = {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_KEY
-    }
-
-    if image and image.startswith("http"):
-        image_response = requests.get(image, timeout=30)
-        image_response.raise_for_status()
-
-        image_data = base64.b64encode(
-            image_response.content
-        ).decode("utf-8")
-
-        body = {
-            "contents": [
-                {
-                    "parts": [
-                        {
-                            "text": question
-                        },
-                        {
-                            "inline_data": {
-                                "mime_type": "image/jpeg",
-                                "data": image_data
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-
-    else:
-        body = {
-            "contents": [
-                {
-                    "parts": [
-                        {
-                            "text": question
-                        }
-                    ]
-                }
-            ]
-        }
+    if not GROQ_KEY:
+        return {"error": "GROQ_KEY is not configured."}
 
     try:
+
         response = requests.post(
-            url,
-            headers=headers,
-            json=body,
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": question
+                    }
+                ]
+            },
             timeout=60
         )
 
         if response.status_code != 200:
-            return {
-                "error": response.text
-            }
+            return {"error": response.text}
 
-        result = response.json()
+        data = response.json()
 
-        candidates = result.get("candidates", [])
+        choices = data.get("choices", [])
 
-        if not candidates:
-            return {
-                "error": "No Gemini answer returned."
-            }
-
-        parts = candidates[0].get(
-            "content", {}
-        ).get(
-            "parts", []
-        )
-
-        if not parts:
-            return {
-                "error": "Gemini returned no text."
-            }
+        if not choices:
+            return {"error": "Groq returned no answer."}
 
         return {
-            "answer": parts[0].get("text", "")
+            "answer": choices[0]["message"]["content"]
         }
 
     except Exception as e:
-        return {
-            "error": f"Gemini request failed: {str(e)}"
-        }
+        return {"error": str(e)}
 
-# ==========================
-# CHATGPT
-# ==========================
-def ask_openai(question):
-    url = "https://api.openai.com/v1/chat/completions"
 
-    headers = {
-        "Authorization": f"Bearer {OPENAI_KEY}",
-        "Content-Type": "application/json"
-    }
+# ============================================================
+# GEMINI
+# ============================================================
 
-    body = {
-        "model": "gpt-4.1-mini",
-        "messages": [
+def ask_gemini(question, image=""):
+
+    if not GEMINI_KEY:
+        return {"error": "GEMINI_KEY is not configured."}
+
+    url = (
+        "https://generativelanguage.googleapis.com/"
+        "v1beta/models/gemini-2.5-flash:generateContent"
+    )
+
+    try:
+
+        parts = [
             {
-                "role": "user",
-                "content": question
+                "text": question
             }
         ]
-    }
 
-    response = requests.post(url, headers=headers, json=body)
+        if image and image.startswith("http"):
 
-    if response.status_code != 200:
-        return {"error": response.text}
+            image_response = requests.get(
+                image,
+                timeout=30
+            )
 
-    result = response.json()
-    return {"answer": result["choices"][0]["message"]["content"]}
+            image_response.raise_for_status()
+
+            image_data = base64.b64encode(
+                image_response.content
+            ).decode("utf-8")
+
+            parts.append(
+                {
+                    "inline_data": {
+                        "mime_type": "image/jpeg",
+                        "data": image_data
+                    }
+                }
+            )
+
+        response = requests.post(
+            url,
+            headers={
+                "Content-Type": "application/json",
+                "x-goog-api-key": GEMINI_KEY
+            },
+            json={
+                "contents": [
+                    {
+                        "parts": parts
+                    }
+                ]
+            },
+            timeout=60
+        )
+
+        if response.status_code != 200:
+            return {"error": response.text}
+
+        data = response.json()
+
+        candidates = data.get("candidates", [])
+
+        if not candidates:
+            return {"error": "Gemini returned no answer."}
+
+        content = candidates[0].get("content", {})
+
+        parts = content.get("parts", [])
+
+        if not parts:
+            return {"error": "Gemini returned no text."}
+
+        text = parts[0].get("text", "")
+
+        return {
+            "answer": text or "Gemini returned an empty answer."
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# CHATGPT / OPENAI
+# ============================================================
+
+def ask_openai(question):
+
+    if not OPENAI_KEY:
+        return {"error": "OPENAI_KEY is not configured."}
+
+    try:
+
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENAI_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "gpt-4.1-mini",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": question
+                    }
+                ]
+            },
+            timeout=60
+        )
+
+        if response.status_code != 200:
+            return {"error": response.text}
+
+        data = response.json()
+
+        choices = data.get("choices", [])
+
+        if not choices:
+            return {"error": "ChatGPT returned no answer."}
+
+        return {
+            "answer": choices[0]["message"]["content"]
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# CLAUDE
+# ============================================================
 
 def ask_claude(question):
 
-    url = "https://api.anthropic.com/v1/messages"
+    if not ANTHROPIC_KEY:
+        return {"error": "ANTHROPIC_KEY is not configured."}
 
-    headers = {
-        "x-api-key": ANTHROPIC_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
-    }
+    try:
 
-    body = {
-        "model": "claude-3-5-haiku-latest",
-        "max_tokens": 1024,
-        "messages": [
-            {
-                "role": "user",
-                "content": question
-            }
-        ]
-    }
+        response = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": ANTHROPIC_KEY,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json"
+            },
+            json={
+                "model": "claude-3-5-haiku-latest",
+                "max_tokens": 1024,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": question
+                    }
+                ]
+            },
+            timeout=60
+        )
 
-    response = requests.post(url, headers=headers, json=body)
+        if response.status_code != 200:
+            return {"error": response.text}
 
-    if response.status_code != 200:
-        return {"error": response.text}
+        data = response.json()
 
-    result = response.json()
+        content = data.get("content", [])
 
-    return {
-        "answer": result["content"][0]["text"]
-    }
-  
-# ==========================
+        if not content:
+            return {"error": "Claude returned no answer."}
+
+        return {
+            "answer": content[0].get(
+                "text",
+                "Claude returned an empty answer."
+            )
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
 # DEEPSEEK
-# ==========================
+# ============================================================
+
 def ask_deepseek(question):
-    url = "https://api.deepseek.com/chat/completions"
 
-    headers = {
-        "Authorization": f"Bearer {DEEPSEEK_KEY}",
-        "Content-Type": "application/json"
-    }
+    if not DEEPSEEK_KEY:
+        return {"error": "DEEPSEEK_KEY is not configured."}
 
-    body = {
-        "model": "deepseek-chat",
-        "messages": [
-            {
-                "role": "user",
-                "content": question
-            }
-        ]
-    }
+    try:
 
-    response = requests.post(url, headers=headers, json=body)
+        response = requests.post(
+            "https://api.deepseek.com/chat/completions",
+            headers={
+                "Authorization": f"Bearer {DEEPSEEK_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "deepseek-chat",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": question
+                    }
+                ]
+            },
+            timeout=60
+        )
 
-    if response.status_code != 200:
-        return {"error": response.text}
+        if response.status_code != 200:
+            return {"error": response.text}
 
-    result = response.json()
-    return {"answer": result["choices"][0]["message"]["content"]}
+        data = response.json()
+
+        choices = data.get("choices", [])
+
+        if not choices:
+            return {"error": "DeepSeek returned no answer."}
+
+        return {
+            "answer": choices[0]["message"]["content"]
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
 
 
-# ==========================
-# ASK ROUTE
-# ==========================
+# ============================================================
+# SINGLE MODEL
+# ============================================================
+
 @app.route("/ask", methods=["POST"])
 def ask():
-    data = request.get_json(force=True)
 
-    if not data:
-        return jsonify({"error": "No JSON received"}), 400
-
-    question = data.get("question")
-    model = data.get("model", "groq").lower()
-
-    if model == "groq":
-        result = ask_groq(question)
-
-    elif model == "gemini":
-        result = ask_gemini(question)
-
-    elif model == "chatgpt":
-        result = ask_openai(question)
-
-    elif model == "deepseek":
-        result = ask_deepseek(question)
-
-    elif model == "claude":
-        result = ask_claude(question)
-       
-    else:
-        result = ask_groq(question)
-
-    return jsonify(result)
-
-@app.route("/compare", methods=["POST"])
-def compare():
-    print("===== COMPARE TEST =====")
-    print("Content-Type:", request.content_type)
-    print("Raw:", request.get_data, as_text=True)
-        
     data = request.get_json(silent=True)
 
     if not data:
-        return jsonify({"error": "No valid JSON received"}), 400
+        return jsonify({
+            "error": "No valid JSON received."
+        }), 400
 
-    question = data.get("question", "")
-    image = data.get("image", "")
+    question = data.get("question", "").strip()
 
-    # -----------------------------
-    # ChatGPT
-    # -----------------------------
+    model = data.get(
+        "model",
+        "groq"
+    ).lower()
+
+    if not question:
+        return jsonify({
+            "error": "Question is empty."
+        }), 400
+
+    if model == "groq":
+
+        result = ask_groq(question)
+
+    elif model == "gemini":
+
+        result = ask_gemini(question)
+
+    elif model == "chatgpt":
+
+        result = ask_openai(question)
+
+    elif model == "claude":
+
+        result = ask_claude(question)
+
+    elif model == "deepseek":
+
+        result = ask_deepseek(question)
+
+    else:
+
+        return jsonify({
+            "error": f"Unknown model: {model}"
+        }), 400
+
+    return jsonify(result)
+
+
+# ============================================================
+# COMPARE ALL AI MODELS
+# ============================================================
+
+@app.route("/compare", methods=["POST"])
+def compare():
+
+    print("===== PROJECT ATLAS COMPARE =====")
+
+    data = request.get_json(silent=True)
+
+    if not data:
+
+        return jsonify({
+            "error": "No valid JSON received."
+        }), 400
+
+    question = data.get(
+        "question",
+        ""
+    ).strip()
+
+    image = data.get(
+        "image",
+        ""
+    )
+
+    if not question:
+
+        return jsonify({
+            "error": "Question is empty."
+        }), 400
+
+    # --------------------------------------------------------
+    # CALL ALL FIVE MODELS
+    # --------------------------------------------------------
+
     try:
         chatgpt = ask_openai(question)
     except Exception as e:
         chatgpt = {"error": str(e)}
 
-    # -----------------------------
-    # Gemini
-    # -----------------------------
     try:
-        gemini = ask_gemini(question, image)
+        gemini = ask_gemini(
+            question,
+            image
+        )
     except Exception as e:
         gemini = {"error": str(e)}
 
-    # -----------------------------
-    # Groq
-    # -----------------------------
     try:
         groq = ask_groq(question)
     except Exception as e:
         groq = {"error": str(e)}
 
-    # -----------------------------
-    # Claude
-    # -----------------------------
     try:
         claude = ask_claude(question)
     except Exception as e:
         claude = {"error": str(e)}
 
-    # -----------------------------
-    # DeepSeek
-    # -----------------------------
     try:
         deepseek = ask_deepseek(question)
     except Exception as e:
         deepseek = {"error": str(e)}
 
-    # -----------------------------
-    # Build comparison page
-    # IMPORTANT: This is INSIDE the function
-    # -----------------------------
-    final_answer = f"""
-    <div class="compare-grid">
+    # --------------------------------------------------------
+    # CLEAN RESULTS
+    # --------------------------------------------------------
 
-        <div class="ai-card">
-            <h2>ChatGPT</h2>
-            <div class="ai-answer">
-                {str(chatgpt)}
-            </div>
-        </div>
+    chatgpt_text = get_text(chatgpt)
+    gemini_text = get_text(gemini)
+    groq_text = get_text(groq)
+    claude_text = get_text(claude)
+    deepseek_text = get_text(deepseek)
 
-        <div class="ai-card">
-            <h2>Gemini</h2>
-            <div class="ai-answer">
-                {str(gemini)}
-            </div>
-        </div>
+    # --------------------------------------------------------
+    # HTML RESULT
+    # --------------------------------------------------------
 
-        <div class="ai-card">
-            <h2>Groq</h2>
-            <div class="ai-answer">
-                {str(groq)}
-            </div>
-        </div>
+    return f"""
+<!DOCTYPE html>
 
-        <div class="ai-card">
-            <h2>Claude</h2>
-            <div class="ai-answer">
-                {str(claude)}
-            </div>
-        </div>
-
-        <div class="ai-card">
-            <h2>DeepSeek</h2>
-            <div class="ai-answer">
-                {str(deepseek)}
-            </div>
-        </div>
-
-    </div>
-    """
-
-    return final_answer
-def get_text(response):
-    if not isinstance(response, dict):
-        return str(response)
-
-    # Normal answer
-    if "answer" in response:
-        return response["answer"]
-
-    # Error handling
-    if "error" in response:
-        error = response["error"]
-
-        if isinstance(error, dict):
-            error = str(error)
-
-        if "credit balance is too low" in error.lower():
-                return "❌ API balance exhausted. Please recharge Claude."
-
-    elif "insufficient balance" in error.lower():
-        return "❌ API balance exhausted."
-
-    elif "503" in error or "UNAVAILABLE" in error:
-        return "⚠️ Service is temporarily unavailable."
-
-    else:
-        return "❌ " + error
-
-    return str(response)
-
-def clean_result(result):
-    """Convert API response into clean text for display."""
-
-    if isinstance(result, dict):
-
-        # Normal successful response
-        if "answer" in result:
-            return str(result["answer"])
-
-        # API error response
-        if "error" in result:
-            error = result["error"]
-
-            if isinstance(error, dict):
-                error = error.get("message", str(error))
-
-            return "⚠️ " + str(error)
-
-    return str(result)
-
-
-chatgpt_text = clean_result(chatgpt)
-gemini_text = clean_result(gemini)
-groq_text = clean_result(groq)
-claude_text = clean_result(claude)
-deepseek_text = clean_result(deepseek)
-
-
-final_answer = f"""
 <html>
+
 <head>
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
 <style>
 
 body {{
-    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
     background: #f3f6fb;
-    margin: 20px;
+    font-family: Arial, sans-serif;
 }}
 
-h1 {{
-    text-align: center;
-    color: #1f3c88;
+.question-box {{
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}}
+
+.question-box b {{
+    color: #1769ff;
 }}
 
 .compare-grid {{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
     gap: 20px;
-    margin-top: 25px;
 }}
 
 .ai-card {{
     background: white;
-    border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    border: 1px solid #e1e5eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+    border-top: 5px solid #1769ff;
+    min-width: 0;
 }}
 
 .ai-card h2 {{
     margin-top: 0;
-    color: #1f3c88;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
+    color: #172554;
 }}
 
-.ai-answer {{
+.ai-card pre {{
+    margin: 0;
     white-space: pre-wrap;
-    line-height: 1.6;
-    color: #333;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    font-family: Arial, sans-serif;
     font-size: 15px;
+    line-height: 1.6;
+    color: #263244;
+}}
+
+@media (max-width: 700px) {{
+
+    .compare-grid {{
+        grid-template-columns: 1fr;
+    }}
+
 }}
 
 </style>
@@ -718,278 +535,322 @@ h1 {{
 
 <body>
 
-<h1> AI Model Comparison</h1>
+<div class="question-box">
+
+<b>Question:</b><br>
+
+{escape(question)}
+
+</div>
 
 <div class="compare-grid">
 
-    <div class="ai-card">
-        <h2> ChatGPT</h2>
-        <div class="ai-answer">
-            {chatgpt_text}
-        </div>
-    </div>
+<div class="ai-card">
+
+<h2>ChatGPT</h2>
+
+<pre>{escape(chatgpt_text)}</pre>
+
+</div>
 
 
-    <div class="ai-card">
-        <h2> Gemini</h2>
-        <div class="ai-answer">
-            {gemini_text}
-        </div>
-    </div>
+<div class="ai-card">
+
+<h2>Gemini</h2>
+
+<pre>{escape(gemini_text)}</pre>
+
+</div>
 
 
-    <div class="ai-card">
-        <h2> Groq</h2>
-        <div class="ai-answer">
-            {groq_text}
-        </div>
-    </div>
+<div class="ai-card">
+
+<h2>Groq</h2>
+
+<pre>{escape(groq_text)}</pre>
+
+</div>
 
 
-    <div class="ai-card">
-        <h2> Claude</h2>
-        <div class="ai-answer">
-            {claude_text}
-        </div>
-    </div>
+<div class="ai-card">
+
+<h2>Claude</h2>
+
+<pre>{escape(claude_text)}</pre>
+
+</div>
 
 
-    <div class="ai-card">
-        <h2> DeepSeek</h2>
-        <div class="ai-answer">
-            {deepseek_text}
-        </div>
-    </div>
+<div class="ai-card">
+
+<h2>DeepSeek</h2>
+
+<pre>{escape(deepseek_text)}</pre>
+
+</div>
 
 </div>
 
 </body>
+
 </html>
 """
 
-final_answer = final_answer.replace("QUESTION_PLACEHOLDER", question)
 
-# =========================
-# STANDALONE PROJECT ATLAS
-# =========================
+# ============================================================
+# HOME PAGE
+# ============================================================
 
 @app.route("/", methods=["GET"])
+@app.route("/atlas", methods=["GET"])
 def home():
-    return"""
+
+    return """
 <!DOCTYPE html>
+
 <html>
+
 <head>
-    <title>Project Atlas - AI Comparison</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+<title>Project Atlas</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-        }
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
-        .header {
-            background: #1769ff;
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
+<style>
 
-        .header h1 {
-            margin: 0;
-            font-size: 32px;
-        }
+* {{
+    box-sizing: border-box;
+}}
 
-        .header p {
-            margin: 8px 0 0;
-            font-size: 17px;
-        }
+body {{
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+}}
 
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 20px;
-        }
+.header {{
+    background: #1769ff;
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+}}
 
-        textarea {
-            width: 100%;
-            height: 120px;
-            padding: 15px;
-            font-size: 17px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-sizing: border-box;
-            resize: vertical;
-        }
+.header h1 {{
+    margin: 0;
+    font-size: 34px;
+}}
 
-        button {
-            width: 100%;
-            margin-top: 15px;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background: #1769ff;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+.header p {{
+    margin-top: 8px;
+}}
 
-        button:hover {
-            background: #0d55d9;
-        }
+.container {{
+    width: 92%;
+    max-width: 1000px;
+    margin: 30px auto;
+}}
 
-        #loading {
-            display: none;
-            text-align: center;
-            margin: 25px;
-            font-size: 18px;
-        }
+textarea {{
+    width: 100%;
+    min-height: 140px;
+    padding: 18px;
+    font-size: 17px;
+    border: 1px solid #ccd5e1;
+    border-radius: 12px;
+    resize: vertical;
+}}
 
-        #result {
-            margin-top: 30px;
-        }
+button {{
+    width: 100%;
+    margin-top: 15px;
+    padding: 17px;
+    background: #1769ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}}
 
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
+button:hover {{
+    background: #0d55d9;
+}}
 
-        .title {
-            font-size: 21px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
+#loading {{
+    display: none;
+    text-align: center;
+    margin: 25px;
+    font-weight: bold;
+}}
 
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-        }
+#result {{
+    margin-top: 30px;
+}}
 
-        .footer {
-            text-align: center;
-            color: #777;
-            margin: 30px;
-        }
-    </style>
+</style>
+
 </head>
 
 <body>
 
-    <div class="header">
-        <h1>PROJECT ATLAS</h1>
-        <p>AI COMPARISON</p>
-    </div>
+<div class="header">
 
-    <div class="container">
+<h1>PROJECT ATLAS</h1>
 
-        <textarea id="question"
-            placeholder="Ask Project Atlas anything..."></textarea>
+<p>AI COMPARISON</p>
 
-        <button onclick="askAtlas()">
-            COMPARE AI MODELS
-        </button>
+</div>
 
-        <div id="loading">
-             Comparing AI models...
-        </div>
 
-        <div id="result"></div>
+<div class="container">
 
-    </div>
+<textarea
+id="question"
+placeholder="Ask Project Atlas anything..."
+></textarea>
 
-    <div class="footer">
-        Project Atlas • AI Comparison
-    </div>
+
+<button onclick="askAtlas()">
+
+COMPARE AI MODELS
+
+</button>
+
+
+<div id="loading">
+
+Comparing AI models...
+
+</div>
+
+
+<div id="result"></div>
+
+</div>
+
 
 <script>
 
-async function askAtlas() {
+async function askAtlas() {{
 
     const question =
-        document.getElementById("question").value.trim();
+        document
+        .getElementById("question")
+        .value
+        .trim();
 
     const result =
-        document.getElementById("result");
+        document
+        .getElementById("result");
 
     const loading =
-        document.getElementById("loading");
+        document
+        .getElementById("loading");
 
-    if (!question) {
+
+    if (!question) {{
+
         alert("Please enter a question.");
+
         return;
-    }
+
+    }}
+
 
     loading.style.display = "block";
+
     result.innerHTML = "";
 
-    try {
 
-        const response = await fetch("/compare", {
-            method: "POST",
+    try {{
 
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/html"
-            },
+        const response =
+            await fetch(
+                "/compare",
+                {{
+                    method: "POST",
 
-            body: JSON.stringify({
-                question: question,
-                image: ""
-            })
-        });
+                    headers: {{
+                        "Content-Type":
+                            "application/json"
+                    }},
 
-        const data = await response.text();
+                    body: JSON.stringify({{
+                        question: question,
+                        image: ""
+                    }})
+                }}
+            );
 
-        if (!response.ok) {
+
+        const data =
+            await response.text();
+
+
+        if (!response.ok) {{
+
             result.innerHTML =
-                "<div class='card'>" +
+                "<div class='question-box'>" +
                 "<b>Error:</b><br>" +
                 data +
                 "</div>";
-        } else {
-            result.innerHTML = data;
-        }
 
-    } catch (error) {
+        }} else {{
+
+            result.innerHTML = data;
+
+        }}
+
+    }} catch (error) {{
 
         result.innerHTML =
-            "<div class='card'>" +
+            "<div class='question-box'>" +
             "<b>Connection error:</b><br>" +
             error.message +
             "</div>";
 
-    } finally {
+    }} finally {{
 
         loading.style.display = "none";
-    }
-}
+
+    }}
+
+}}
 
 </script>
 
 </body>
+
 </html>
 """
 
-# ==========================
-# TEST ROUTE
-# ==========================
+
+# ============================================================
+# TEST
+# ============================================================
+
 @app.route("/test", methods=["POST"])
 def test():
-    return request.get_data(as_text=True)
+
+    return request.get_data(
+        as_text=True
+    )
 
 
-# ==========================
-# MAIN
-# ==========================
+# ============================================================
+# START SERVER
+# ============================================================
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+
+    app.run(
+        host="0.0.0.0",
+        port=int(
+            os.getenv(
+                "PORT",
+                5000
+            )
+        )
+    )
