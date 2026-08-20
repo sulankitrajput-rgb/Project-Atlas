@@ -191,7 +191,7 @@ def ask_gemini(question, image=""):
 
             image_response = requests.get(
                 image,
-                timeout=62
+                timeout=60
             )
 
             image_response.raise_for_status()
