@@ -222,7 +222,7 @@ def ask_gemini(question, image=""):
                     }
                 ]
             },
-            timeout=60
+            timeout=25
         )
 
         if response.status_code != 200:
