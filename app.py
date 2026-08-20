@@ -51,45 +51,119 @@ def get_text(response):
 def ask_groq(question):
 
     if not GROQ_KEY:
-        return {"error": "GROQ_KEY is not configured."}
+        return {
+            "error": "GROQ_KEY is not configured."
+        }
 
     try:
 
         response = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
+
             headers={
                 "Authorization": f"Bearer {GROQ_KEY}",
                 "Content-Type": "application/json"
             },
+
             json={
                 "model": "llama-3.1-8b-instant",
+
                 "messages": [
                     {
                         "role": "user",
                         "content": question
                     }
-                ]
+                ],
+
+                "temperature": 0.7,
+
+                "max_tokens": 2048
             },
+
             timeout=60
         )
 
+        # -----------------------------
+        # HANDLE RATE LIMIT
+        # -----------------------------
+
+        if response.status_code == 429:
+
+            return {
+                "error": "Groq is temporarily busy or rate-limited. Please try again in a few seconds."
+            }
+
+        # -----------------------------
+        # HANDLE OTHER API ERRORS
+        # -----------------------------
+
         if response.status_code != 200:
-            return {"error": response.text}
+
+            try:
+                error_data = response.json()
+
+                error_message = (
+                    error_data
+                    .get("error", {})
+                    .get("message", response.text)
+                )
+
+            except Exception:
+                error_message = response.text
+
+            return {
+                "error": f"Groq API error: {error_message}"
+            }
+
+        # -----------------------------
+        # READ JSON RESPONSE
+        # -----------------------------
 
         data = response.json()
 
         choices = data.get("choices", [])
 
         if not choices:
-            return {"error": "Groq returned no answer."}
+
+            return {
+                "error": "Groq returned no answer."
+            }
+
+        # -----------------------------
+        # GET ANSWER
+        # -----------------------------
+
+        message = choices[0].get("message", {})
+
+        answer = message.get("content", "")
+
+        if not answer:
+
+            return {
+                "error": "Groq returned an empty answer."
+            }
 
         return {
-            "answer": choices[0]["message"]["content"]
+            "answer": answer
+        }
+
+    except requests.exceptions.Timeout:
+
+        return {
+            "error": "Groq took too long to respond. Please try again."
+        }
+
+    except requests.exceptions.RequestException as e:
+
+        return {
+            "error": f"Groq connection error: {str(e)}"
         }
 
     except Exception as e:
-        return {"error": str(e)}
 
+        return {
+            "error": f"Groq error: {str(e)}"
+        }
 
 # ============================================================
 # GEMINI
@@ -276,54 +350,6 @@ def ask_claude(question):
     except Exception as e:
         return {"error": str(e)}
 
-
-# ============================================================
-# DEEPSEEK
-# ============================================================
-
-def ask_deepseek(question):
-
-    if not DEEPSEEK_KEY:
-        return {"error": "DEEPSEEK_KEY is not configured."}
-
-    try:
-
-        response = requests.post(
-            "https://api.deepseek.com/chat/completions",
-            headers={
-                "Authorization": f"Bearer {DEEPSEEK_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": "deepseek-chat",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": question
-                    }
-                ]
-            },
-            timeout=60
-        )
-
-        if response.status_code != 200:
-            return {"error": response.text}
-
-        data = response.json()
-
-        choices = data.get("choices", [])
-
-        if not choices:
-            return {"error": "DeepSeek returned no answer."}
-
-        return {
-            "answer": choices[0]["message"]["content"]
-        }
-
-    except Exception as e:
-        return {"error": str(e)}
-
-
 # ============================================================
 # SINGLE MODEL
 # ============================================================
@@ -413,7 +439,7 @@ def compare():
         }), 400
 
     # --------------------------------------------------------
-    # CALL ALL FIVE MODELS
+    # CALL ALL FOUR MODELS
     # --------------------------------------------------------
 
     try:
@@ -439,11 +465,6 @@ def compare():
     except Exception as e:
         claude = {"error": str(e)}
 
-    try:
-        deepseek = ask_deepseek(question)
-    except Exception as e:
-        deepseek = {"error": str(e)}
-
     # --------------------------------------------------------
     # CLEAN RESULTS
     # --------------------------------------------------------
@@ -452,8 +473,7 @@ def compare():
     gemini_text = get_text(gemini)
     groq_text = get_text(groq)
     claude_text = get_text(claude)
-    deepseek_text = get_text(deepseek)
-
+ 
     # --------------------------------------------------------
     # HTML RESULT
     # --------------------------------------------------------
@@ -577,15 +597,6 @@ body {{
 <h2>Claude</h2>
 
 <pre>{escape(claude_text)}</pre>
-
-</div>
-
-
-<div class="ai-card">
-
-<h2>DeepSeek</h2>
-
-<pre>{escape(deepseek_text)}</pre>
 
 </div>
 
@@ -876,140 +887,101 @@ pre {
 
 <script>
 
-
 async function askAtlas() {
 
+    const questionElement =
+        document.getElementById("question");
 
-    // Get question
-
-    const question =
-        document.getElementById("question")
-        .value
-        .trim();
-
-
-    // Get selected style
-
-    const style =
-        document.getElementById("style")
-        .value;
-
-
-    // Get result area
+    const styleElement =
+        document.getElementById("style");
 
     const result =
         document.getElementById("result");
 
-
-    // Get loading message
-
     const loading =
         document.getElementById("loading");
 
+    const button =
+        document.querySelector("button");
 
-    // Check question
+    const question =
+        questionElement ? questionElement.value.trim() : "";
+
+    const style =
+        styleElement ? styleElement.value : "balanced";
 
     if (!question) {
-
         alert("Please enter a question.");
-
         return;
-
     }
 
-
-    // Show loading
+    // Prevent multiple requests
+    if (button) {
+        button.disabled = true;
+        button.innerText = "⏳ Thinking...";
+    }
 
     loading.style.display = "block";
-
+    loading.innerText = "🤖 Comparing AI models...";
     result.innerHTML = "";
-
 
     try {
 
+        const response = await fetch("/compare", {
+            method: "POST",
 
-        // Send request to Python
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/html"
+            },
 
-        const response = await fetch(
-            "/compare",
-            {
+            body: JSON.stringify({
+                question: question,
+                image: "",
+                style: style
+            })
+        });
 
-                method: "POST",
+        // Get the complete server response
+        const data = await response.text();
 
-                headers: {
+        // Only treat it as an error when HTTP itself failed
+        if (!response.ok) {
+            throw new Error(
+                data || "Server returned an error."
+            );
+        }
 
-                    "Content-Type":
-                        "application/json",
+        // Display the answer
+        result.innerHTML = data;
 
-                    "Accept":
-                        "text/html"
+    } catch (error) {
 
-                },
-
-                body: JSON.stringify({
-
-                    question: question,
-
-                    image: "",
-
-                    style: style
-
-                })
-
-            }
+        console.error(
+            "Project Atlas error:",
+            error
         );
 
+        result.innerHTML = `
+            <div class="card">
+                <h3>⚠️ Something went wrong</h3>
+                <p>${error.message}</p>
+            </div>
+        `;
 
-        // Get response
+    } finally {
 
-        const data =
-            await response.text();
-
-
-        // Check for error
-
-        if (!response.ok) {
-
-            result.innerHTML =
-                "<div class='card'>" +
-                "<b>Error:</b><br>" +
-                data +
-                "</div>";
-
-        }
-
-        else {
-
-            // Show answers
-
-            result.innerHTML = data;
-
-        }
-
-
-    }
-
-    catch (error) {
-
-
-        result.innerHTML =
-            "<div class='card'>" +
-            "<b>Connection error:</b><br>" +
-            error.message +
-            "</div>";
-
-    }
-
-
-    finally {
-
-        // Hide loading
-
+        // Always hide loading message
         loading.style.display = "none";
 
+        // Re-enable button
+        if (button) {
+            button.disabled = false;
+            button.innerText = "COMPARE AI MODELS";
+        }
     }
-
 }
+
 
 
 </script>
@@ -1035,7 +1007,6 @@ def test():
 # ============================================================
 # START SERVER
 # ============================================================
-
 if __name__ == "__main__":
 
     app.run(
