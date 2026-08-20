@@ -66,7 +66,7 @@ def ask_groq(question):
             },
 
             json={
-                "model": "llama-3.1-8b-instant",
+                "model": "openai/gpt-oss-20b",
 
                 "messages": [
                     {
