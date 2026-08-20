@@ -169,88 +169,109 @@ def ask_groq(question):
 # GEMINI
 # ============================================================
 
-def ask_gemini(question, image=""):
+def ask_gemini(question, image=None):
 
     if not GEMINI_KEY:
         return {"error": "GEMINI_KEY is not configured."}
 
-    url = (
-        "https://generativelanguage.googleapis.com/"
-        "v1beta/models/gemini-3.6-flash:generateContent"
-    )
-
     try:
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent"
 
-        parts = [
-            {
-                "text": question
-            }
-        ]
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": GEMINI_KEY
+        }
 
-        if image and image.startswith("http"):
-
-            image_response = requests.get(
-                image,
-                timeout=20
-            )
-
-            image_response.raise_for_status()
-
-            image_data = base64.b64encode(
-                image_response.content
-            ).decode("utf-8")
-
-            parts.append(
-                {
-                    "inline_data": {
-                        "mime_type": "image/jpeg",
-                        "data": image_data
+        # Simple text request
+        if not image:
+            payload = {
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "text": question
+                            }
+                        ]
                     }
-                }
-            )
+                ]
+            }
+
+        # Image + text request
+        else:
+            payload = {
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "text": question
+                            },
+                            {
+                                "inline_data": {
+                                    "mime_type": "image/jpeg",
+                                    "data": image
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
 
         response = requests.post(
             url,
-            headers={
-                "Content-Type": "application/json",
-                "x-goog-api-key": GEMINI_KEY
-            },
-            json={
-                "contents": [
-                    {
-                        "parts": parts
-                    }
-                ]
-            },
-            timeout=25
+            headers=headers,
+            json=payload,
+            timeout=20
         )
 
         if response.status_code != 200:
-            return {"error": response.text}
+            return {
+                "error": "Gemini API error: " + response.text
+            }
 
         data = response.json()
 
         candidates = data.get("candidates", [])
 
         if not candidates:
-            return {"error": "Gemini returned no answer."}
+            return {
+                "error": "Gemini returned no answer."
+            }
 
         content = candidates[0].get("content", {})
-
         parts = content.get("parts", [])
 
         if not parts:
-            return {"error": "Gemini returned no text."}
+            return {
+                "error": "Gemini returned no text."
+            }
 
         text = parts[0].get("text", "")
 
+        if not text:
+            return {
+                "error": "Gemini returned an empty answer."
+            }
+
         return {
-            "answer": text or "Gemini returned an empty answer."
+            "answer": text
+        }
+
+    except requests.exceptions.Timeout:
+        return {
+            "error": "Gemini request timed out."
+        }
+
+    except requests.exceptions.RequestException as e:
+        return {
+            "error": "Gemini connection error: " + str(e)
         }
 
     except Exception as e:
-        return {"error": str(e)}
-
+        return {
+            "error": "Gemini error: " + str(e)
+        }
 
 # ============================================================
 # CHATGPT / OPENAI
