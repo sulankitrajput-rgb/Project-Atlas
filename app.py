@@ -174,20 +174,22 @@ def ask_gemini(question, image=None):
     if not GEMINI_KEY:
         return {"error": "GEMINI_KEY is not configured."}
 
+    url = (
+        "https://generativelanguage.googleapis.com/"
+        "v1beta/models/gemini-2.5-flash:generateContent"
+    )
+
+    headers = {
+        "Content-Type": "application/json",
+        "x-goog-api-key": GEMINI_KEY
+    }
+
     try:
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent"
-
-        headers = {
-            "Content-Type": "application/json",
-            "x-goog-api-key": GEMINI_KEY
-        }
-
-        # Simple text request
+        # Text only
         if not image:
             payload = {
                 "contents": [
                     {
-                        "role": "user",
                         "parts": [
                             {
                                 "text": question
@@ -197,12 +199,21 @@ def ask_gemini(question, image=None):
                 ]
             }
 
-        # Image + text request
+        # Text + image
         else:
+            if isinstance(image, bytes):
+                import base64
+                image_data = base64.b64encode(image).decode("utf-8")
+            else:
+                image_data = image
+
+                # Remove data URL prefix if present
+                if "," in image_data and image_data.startswith("data:"):
+                    image_data = image_data.split(",", 1)[1]
+
             payload = {
                 "contents": [
                     {
-                        "role": "user",
                         "parts": [
                             {
                                 "text": question
@@ -210,7 +221,7 @@ def ask_gemini(question, image=None):
                             {
                                 "inline_data": {
                                     "mime_type": "image/jpeg",
-                                    "data": image
+                                    "data": image_data
                                 }
                             }
                         ]
@@ -222,7 +233,7 @@ def ask_gemini(question, image=None):
             url,
             headers=headers,
             json=payload,
-            timeout=20
+            timeout=(5, 15)
         )
 
         if response.status_code != 200:
