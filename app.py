@@ -351,7 +351,7 @@ def ask_claude(question):
             },
             json={
                 "model": 
-                "claude-4-5-haiku-latest",
+                "claude-4-5-haiku-20251001",
                 "max_tokens": 1024,
                 "messages": [
                     {
