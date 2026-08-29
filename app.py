@@ -350,7 +350,8 @@ def ask_claude(question):
                 "content-type": "application/json"
             },
             json={
-                "model": "claude-3-5-haiku-latest",
+                "model": 
+                "claude-3-5-haiku-latest",
                 "max_tokens": 1024,
                 "messages": [
                     {
